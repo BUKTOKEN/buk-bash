@@ -187,7 +187,7 @@ export default class PlatformerScene extends Phaser.Scene {
     this.physics.add.collider(this.player, platforms);
     this.physics.add.collider(this.enemy, platforms);
     this.physics.add.collider(this.player, this.enemy);
-    this.physics.add.overlap(this.player, this.enemy, this.handleCollision, undefined, this);
+    this.physics.add.overlap(this.player, this.enemy, this.handleCollision as unknown as ArcadePhysicsCallback, undefined, this);
 
     // Make enemy walk forward
     this.enemy.setVelocityX(-50); // Walk towards the player at a slow speed
@@ -224,19 +224,9 @@ export default class PlatformerScene extends Phaser.Scene {
           y: 10,
         },
       });
-      gameOverText.setOrigin(0.5);
-      gameOverText.setInteractive();
+      gameOverText.setOrigin(0.5, 0.5);
 
-      gameOverText.on("pointerup", () => {
-        this.scene.restart();
-      });
-
-      return; // Prevent further update logic
-    }
-
-    if (this.gameover) return; // Prevent player movement when game is over
-
-    if (this.enemyHealth <= 0) {
+      // Go to ending scene
       this.scene.start("ending", {
         playerHealth: this.playerHealth,
         enemyHealth: this.enemyHealth,
@@ -246,8 +236,8 @@ export default class PlatformerScene extends Phaser.Scene {
       });
     }
 
-    // Check if the player and enemy exist before accessing their frames
-    if (this.player?.anims?.currentFrame) {
+    // Check if the player and enemy exist before accessing anims
+    if (this.player.anims?.currentFrame) {
       const playerFrame = this.player.anims.currentFrame.frame.name;
       if (this.frameSizes[playerFrame]) {
         this.player.setSize(this.frameSizes[playerFrame].width, this.frameSizes[playerFrame].height);
@@ -278,17 +268,21 @@ export default class PlatformerScene extends Phaser.Scene {
   }
 
   handleCollision(
-    player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    enemy: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
+    player: Phaser.GameObjects.GameObject,
+    enemy: Phaser.GameObjects.GameObject
   ) {
     console.log('handleCollision triggered');
     if (this.gameover) return; // Prevent player movement when game is over
     if (!this.playerHealthText || !this.enemyHealthText) return;
 
+    // Cast to expected types
+    const playerSprite = player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+
     let isEnemyAttacking = false;
-    const isPlayerPunching = player.anims.currentAnim.key === 'bukPunch';
-    if (enemy.anims && enemy.anims.currentAnim) {
-      isEnemyAttacking = enemy.anims.currentAnim.key === 'attack';
+    const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
+    if (enemySprite.anims && enemySprite.anims.currentAnim) {
+      isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
     }
 
     // Check if player is punching
@@ -296,7 +290,7 @@ export default class PlatformerScene extends Phaser.Scene {
       this.enemyHealth -= 10;
       this.enemyHealthText.setText("Ninja: " + this.enemyHealth + "%");
       // Apply knockback to the enemy
-      enemy.setVelocityX(160); // Knockback enemy to the right
+      enemySprite.setVelocityX(160); // Knockback enemy to the right
       this.enemyHitCooldown = true; // Set cooldown flag
       this.time.addEvent({ delay: 500, callback: () => { this.enemyHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
     }
@@ -307,16 +301,16 @@ export default class PlatformerScene extends Phaser.Scene {
       this.playerHealthText.setText("BUK: " + this.playerHealth + "%");
 
       // Determine knockback direction based on player and enemy positions
-      this.player?.anims.play("bukPunched", true);
-      const knockbackDirection = player.x < enemy.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
-      player.setVelocityX(knockbackDirection);
+      playerSprite.anims.play("bukPunched", true);
+      const knockbackDirection = playerSprite.x < enemySprite.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
+      playerSprite.setVelocityX(knockbackDirection);
 
       this.playerHitCooldown = true; // Set cooldown flag
-      this.player?.setVelocityX(0); // Stop player movement when hit
+      playerSprite.setVelocityX(0); // Stop player movement when hit
 
       // Reset player state after bukPunched animation completes
-      this.player?.once('animationcomplete', () => {
-        this.player?.anims.play('stand', true); // Reset to stand animation
+      playerSprite.once('animationcomplete', () => {
+        playerSprite.anims.play('stand', true); // Reset to stand animation
       });
 
       this.time.addEvent({ delay: 500, callback: () => { this.playerHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms

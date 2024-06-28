@@ -29,6 +29,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({});//{ signedPayload });
   } catch (e) {
     console.error("Server error:", e);
-    res.status(500).json({ error: `Server error: ${e.message}` });
+    res.status(500).json({ error: `Server error: ${e}` });
   }
 }
