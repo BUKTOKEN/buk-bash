@@ -1,66 +1,34 @@
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 import "../styles/globals.css";
+require("dotenv").config();
 
-export default async function server(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // De-structure the arguments we passed in out of the request body
-    const { playerAddress, username, recordSeconds } = JSON.parse(req.body);
+    const { playerAddress } = JSON.parse(req.body);
 
-    // You'll need to add your private key in a .env.local file in the root of your project
-    // !!!!! NOTE !!!!! NEVER LEAK YOUR PRIVATE KEY to anyone!
-    if (!process.env.PRIVATE_KEY) {
-      throw new Error("You're missing PRIVATE_KEY in your .env.local file.");
+    if (!process.env.PRIVATE_KEY || !process.env.PRIVATE_SECRET_KEY) {
+      throw new Error("Missing PRIVATE_KEY or PRIVATE_SECRET_KEY in environment variables.");
     }
 
-    // Initialize the Thirdweb SDK on the serverside
+    // Initialize the Thirdweb SDK on the server-side
     const sdk = ThirdwebSDK.fromPrivateKey(
-      // Your wallet private key (read it in from .env.local file)
       process.env.PRIVATE_KEY as string,
-      "mumbai"
+      "https://rpc.sepolia.org",
+      { secretKey: process.env.PRIVATE_SECRET_KEY as string }
     );
 
-    // Load the NFT Collection via it's contract address using the SDK
+    // Load the NFT Collection via its contract address using the SDK
     const nftCollection = await sdk.getContract(
-      // Replace this with your NFT Collection contract address
       process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!,
       "nft-collection"
     );
 
-    // Here we can make all kinds of cool checks to see if the user is eligible to mint the NFT.
-    // Here are a few examples:
-
-    // Check that this wallet hasn't already minted a page - 1 NFT per wallet
-    const hasMinted = (await nftCollection.balanceOf(playerAddress)).gt(0);
-    if (hasMinted) {
-      res.status(400).json({ error: "Already minted" });
-      return;
-    }
-
-    // If all the checks pass, begin generating the signature...
-    // Generate the signature for the page NFT
-    const signedPayload = await nftCollection.signature.generate({
-      to: playerAddress,
-      metadata: {
-        name: username as string,
-        image:
-          "ipfs://QmZvVNpnnbwsPzVhRoRSuT4T3DFV6wiwzBdXmJAdgGk6UP/platformer.png" as string,
-        description: `${username} finished the game in ${recordSeconds} seconds`,
-        properties: {
-          time: recordSeconds,
-          // Add any properties you want to store on the NFT
-        },
-      },
-    });
-
-    // Return back the signedPayload to the client.
-    res.status(200).json({
-      signedPayload: JSON.parse(JSON.stringify(signedPayload)),
-    });
+    // Return the signed payload to the client
+    res.status(200).json({});//{ signedPayload });
   } catch (e) {
-    res.status(500).json({ error: `Server error ${e}` });
+    console.error("Server error:", e);
+    res.status(500).json({ error: `Server error: ${e.message}` });
   }
 }

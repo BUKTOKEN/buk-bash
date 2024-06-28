@@ -1,0 +1,13 @@
+{
+    "frames": {
+      "frame1": { "frame": { "x": 0, "y": 0, "w": 75, "h": 70 } },
+      "frame2": { "frame": { "x": 99, "y": 0, "w": 75, "h": 70 } },
+      "frame3": { "frame": { "x": 237, "y": 0, "w": 75, "h": 70 } },
+      "frame4": { "frame": { "x": 363, "y": 0, "w": 75, "h": 70 } }
+    },
+    "meta": {
+      "image": "EnemyAttack.png",
+      "size": { "w": 75, "h": 70 },
+      "scale": 1
+    }
+  }

@@ -1,11 +1,11 @@
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { ChainId } from "@thirdweb-dev/sdk";
 import Phaser from "phaser";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
+import { CoinbaseWallet } from "@thirdweb-dev/wallets";
 
 export default class EndingScene extends Phaser.Scene {
-  score = 0;
-  recordSeconds = 0;
-  username = "";
+  wallet: CoinbaseWallet | undefined;
+  userAddress: string | undefined;
   nftTitle: Phaser.GameObjects.Text | undefined;
 
   constructor() {
@@ -13,116 +13,94 @@ export default class EndingScene extends Phaser.Scene {
   }
 
   init(data: any) {
-    this.score = data.score;
-    this.recordSeconds = data.recordTime / 1000;
+    this.wallet = data.playerWallet;
+    this.userAddress = data.userAddress;
   }
 
   preload() {
-    this.load.html("mintform", "assets/form.html");
+    this.load.image("bg", "assets/bukbeachbg.jpg");
   }
 
   create() {
-    this.add.image(400, 300, "pic");
+    this.add.image(400, 280, "bg");
 
-    this.nftTitle = this.add.text(10, 10, "Submit your nickname to mint", {
-      color: "white",
+    // Create a button to mint NFT
+    const mintButton = this.add.text(400, 300, "Mint NFT", {
+      fontSize: "32px",
       fontFamily: "Arial",
-      fontSize: "32px ",
+      color: "#ffffff",
+      backgroundColor: "#000000",
+      padding: {
+        x: 20,
+        y: 10,
+      },
+    });
+    mintButton.setOrigin(0.5);
+    mintButton.setInteractive();
+
+    mintButton.on("pointerup", () => {
+      this.mintWithSignature();
     });
 
-    var element = this.add.dom(400, 300).createFromCache("mintform");
-
-    element.setPerspective(800);
-
-    element.addListener("click");
-
-    element.on("click", (event: any) => {
-      if (event.target.name === "submitButton") {
-        //  Turn off the click events
-        element.removeListener("click");
-
-        var inputUsername: any = element.getChildByName("username");
-
-        //  Have they entered anything?
-        if (inputUsername.value !== "") {
-          //  Populate the text with whatever they typed in as the username!
-          if (this.nftTitle) {
-            this.nftTitle.setText(
-              "Congrats " +
-                inputUsername.value +
-                " for scoring " +
-                this.score +
-                " in " +
-                this.recordSeconds +
-                " seconds. "
-            );
-
-            this.username = inputUsername.value;
-            this.mintWithSignature();
-          }
-        } else {
-          //  Flash the prompt
-          alert("Write your nickname");
-        }
-      }
+    // Text to display minting result
+    this.nftTitle = this.add.text(400, 400, "", {
+      fontSize: "24px",
+      fontFamily: "Arial",
+      color: "#000",
     });
+    this.nftTitle.setOrigin(0.5);
   }
 
-  // This function calls a Next JS API route that mints an NFT with signature-based minting.
-  // We send in the address of the current user, and the text they entered as part of the request.
   mintWithSignature = async () => {
-    if (!window.ethereum) return;
-
-    // Connect with Metamask and switch to Mumbai
-    const MetaMask = (await import("@thirdweb-dev/wallets")).MetaMask;
-    const wallet = new MetaMask({ appName: "Phaser-Platformer" });
-    const { address, chainId } = await wallet.connect(ChainId.Mumbai);
-    const signer = await wallet.getSigner(chainId);
-
-    // Fetch the NFT collection from thirdweb via it's contract address.
-    const sdk = ThirdwebSDK.fromSigner(signer);
-    const nftCollection = await sdk.getContract(
-      process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "", // Replace this with your NFT Collection contract address
-      "nft-collection"
-    );
+    if (!this.wallet || !this.userAddress) {
+      this.nftTitle?.setText("Wallet not connected");
+      return;
+    }
 
     try {
-      if (!this.nftTitle?.text) {
-        alert("Please enter a name.");
-        return;
+      const signer = await this.wallet.getSigner();
+
+      // Make request to server for signed payload
+      // const signedPayloadReq = await fetch(`/api/server`, {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     playerAddress: this.userAddress,
+      //   }),
+      // });
+
+      // const json = await signedPayloadReq.json();
+
+      // if (!signedPayloadReq.ok) {
+      //   this.nftTitle?.setText(json.error || "Failed to fetch signed payload");
+      //   return;
+      // }
+     
+      // const signedPayload = json.signedPayload;
+
+      // Fetch the NFT collection contract
+      const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
+      const nftCollection = await sdk.getContract(
+        process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
+        "nft-collection"
+      );
+
+      // Mint NFT with signature
+      const nft = await nftCollection.mint({
+        name: "Level Completion NFT",
+        description: "Completed level 1",
+        image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe", 
+        properties: {
+          level: 1
+        }
+      })
+      if (nft) {
+        this.nftTitle?.setText("NFT minted successfully!");
+      } else {
+        this.nftTitle?.setText("Failed to mint NFT");
       }
-
-      // Make a request to /api/server
-      const signedPayloadReq = await fetch(`/api/server`, {
-        method: "POST",
-        body: JSON.stringify({
-          playerAddress: address, // Address of the current user
-          username: this.username,
-          recordSeconds: this.recordSeconds,
-        }),
-      });
-
-      // Grab the JSON from the response
-      const json = await signedPayloadReq.json();
-
-      if (!signedPayloadReq.ok) {
-        alert(json.error);
-      }
-
-      // If the request succeeded, we'll get the signed payload from the response.
-      // The API should come back with a JSON object containing a field called signedPayload.
-      // This line of code will parse the response and store it in a variable called signedPayload.
-      const signedPayload = json.signedPayload;
-
-      // Now we can call signature.mint and pass in the signed payload that we received from the server.
-      // This means we provided a signature for the user to mint an NFT with.
-      const nft = await nftCollection?.signature.mint(signedPayload);
-
-      alert("Minted succesfully!");
-
-      return nft;
-    } catch (e) {
-      console.error("An error occurred trying to mint the NFT:", e);
+    } catch (error) {
+      console.error("Error minting NFT:", error);
+      this.nftTitle?.setText("Error minting NFT");
     }
   };
 }

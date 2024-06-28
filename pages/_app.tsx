@@ -1,26 +1,24 @@
-import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
+import { ThirdwebProvider } from "@thirdweb-dev/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
 import ThirdwebGuideFooter from "../components/guide/ThirdwebGuideFooter";
 import "./styles/globals.css";
 
-// This is the chainId your dApp will work on.
-const activeChainId = ChainId.Mumbai;
-
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider desiredChainId={activeChainId}>
+    <ThirdwebProvider  supportedChains={[BaseSepoliaTestnet]} clientId={process.env.NEXT_PUBLIC_CLIENT_ID}>
       <Head>
-        <title>thirdweb Signature Based Minting</title>
+        <title>BUK Bash</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
           name="description"
-          content="thirdweb Example Repository to Showcase signature based minting on an NFT Collection contract"
+          content="BUK Bash - NFT reward"
         />
-        <meta name="keywords" content="thirdweb signature based minting" />
+        <meta name="keywords" content="buk bash" />
       </Head>
       <Component {...pageProps} />
-      <ThirdwebGuideFooter />
+      {/* <ThirdwebGuideFooter /> */}
     </ThirdwebProvider>
   );
 }

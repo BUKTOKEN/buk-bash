@@ -18,6 +18,11 @@ const Home: NextPage = () => {
       const Phaser = await import("phaser");
 
       // import dynamically game scenes
+      const { default: StartScene } = await import(
+        "../components/StartScene"
+      );
+
+      // import dynamically game scenes
       const { default: PlatformerScene } = await import(
         "../components/PlatformerScene"
       );
@@ -35,17 +40,18 @@ const Home: NextPage = () => {
         type: Phaser.AUTO,
         parent: "app",
         width: 800,
-        height: 600,
+        height: 550,
         physics: {
           default: "arcade",
           arcade: {
             gravity: { y: 200 },
+            debug: false,
           },
         },
         dom: {
           createContainer: true,
         },
-        scene: [PlatformerScene, EndingScene],
+        scene: [StartScene, PlatformerScene, EndingScene],
       });
 
       setGame(phaserGame);
@@ -53,83 +59,22 @@ const Home: NextPage = () => {
     initPhaser();
   }, []);
 
-  const address = useAddress();
+  // const address = useAddress();
 
-  // Fetch the NFT collection from thirdweb via it's contract address.
-  const { contract: nftCollection } = useContract(
-    // Replace this with your NFT Collection contract address
-    process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS,
-    "nft-collection"
-  );
+  // // Fetch the NFT collection from thirdweb via it's contract address.
+  // const { contract: nftCollection } = useContract(
+  //   // Replace this with your NFT Collection contract address
+  //   process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS,
+  //   "nft-collection"
+  // );
 
-  const { data: nfts, isLoading: loadingNfts } = useNFTs(nftCollection);
+ // const { data: nfts, isLoading: loadingNfts } = useNFTs(nftCollection);
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.h1}>Phaser Platformer</h1>
-      <p className={styles.explain}>
-        Signature-based minting with{" "}
-        <b>
-          <a
-            href="https://thirdweb.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.purple}
-          >
-            thirdweb
-          </a>
-        </b>{" "}
-        + Phaser Game to play and mint NFT.
-      </p>
-
+      <h1 className={styles.h1}>BUK Bash</h1>
       <div id="app" key="app">
         {/* the game will be rendered here */}
-      </div>
-
-      <p>NB: Players can mint only 1 NFT per address</p>
-
-      <hr className={styles.divider} />
-
-      <div className={styles.collectionContainer}>
-        <h2 className={styles.ourCollection}>Scoreboard</h2>
-
-        {loadingNfts ? (
-          <p>Loading...</p>
-        ) : (
-          <div className={styles.nftGrid}>
-            {nfts?.map((nft) => (
-              <div className={styles.nftItem} key={nft.metadata.id.toString()}>
-                <div>
-                  <ThirdwebNftMedia
-                    metadata={nft.metadata}
-                    style={{
-                      height: 90,
-                      borderRadius: 16,
-                    }}
-                  />
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <p>
-                    <b>@{nft.metadata.name}</b>
-                  </p>
-                  <p>{nft.metadata.description}</p>
-                </div>
-
-                <div style={{ textAlign: "center" }}>
-                  <p>Player address</p>
-                  <p>
-                    <b>
-                      {nft.owner
-                        .slice(0, 6)
-                        .concat("...")
-                        .concat(nft.owner.slice(-4))}
-                    </b>
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
