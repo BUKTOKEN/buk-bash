@@ -1,7 +1,7 @@
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 import "../styles/globals.css";
-require("dotenv").config();
+//require("dotenv").config();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
