@@ -6,7 +6,7 @@
       "frame4": { "frame": { "x": 363, "y": 0, "w": 75, "h": 70 } }
     },
     "meta": {
-      "image": "EnemyAttack.png",
+      "image": "enemy.png",
       "size": { "w": 75, "h": 70 },
       "scale": 1
     }

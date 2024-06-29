@@ -184,10 +184,59 @@ export default class PlatformerScene extends Phaser.Scene {
       color: "#fff",
     });
 
-    this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(this.enemy, platforms);
+    // this.physics.add.collider(this.player, platforms);
+    // this.physics.add.collider(this.enemy, platforms);
     this.physics.add.collider(this.player, this.enemy);
-    this.physics.add.overlap(this.player, this.enemy, this.handleCollision as unknown as ArcadePhysicsCallback, undefined, this);
+    //   this.physics.add.overlap(this.player, this.enemy, this.handleCollision as ArcadePhysicsCallback, true);
+
+    this.physics.add.overlap(this.player, this.enemy, (player, enemy) => {
+      console.log('handleCollision triggered');
+      if (this.gameover) return; // Prevent player movement when game is over
+      if (!this.playerHealthText || !this.enemyHealthText) return;
+
+      // Cast to expected types
+      const playerSprite = player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+      const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+
+      let isEnemyAttacking = false;
+      const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
+      if (enemySprite.anims && enemySprite.anims.currentAnim) {
+        isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
+      }
+
+      // Check if player is punching
+      if (!this.enemyHitCooldown && isPlayerPunching) {
+        this.enemyHealth -= 10;
+        this.enemyHealthText.setText("Ninja: " + this.enemyHealth + "%");
+        // Apply knockback to the enemy
+        enemySprite.setVelocityX(160); // Knockback enemy to the right
+        this.enemyHitCooldown = true; // Set cooldown flag
+        this.time.addEvent({ delay: 500, callback: () => { this.enemyHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
+      }
+
+      // Check if enemy is attacking
+      if (!this.playerHitCooldown && isEnemyAttacking) {
+        this.playerHealth -= 10;
+        this.playerHealthText.setText("BUK: " + this.playerHealth + "%");
+
+        // Determine knockback direction based on player and enemy positions
+        playerSprite.anims.play("bukPunched", true);
+        const knockbackDirection = playerSprite.x < enemySprite.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
+        playerSprite.setVelocityX(knockbackDirection);
+
+        this.playerHitCooldown = true; // Set cooldown flag
+        playerSprite.setVelocityX(0); // Stop player movement when hit
+
+        // Reset player state after bukPunched animation completes
+        playerSprite.once('animationcomplete', () => {
+          playerSprite.anims.play('stand', true); // Reset to stand animation
+        });
+
+        this.time.addEvent({ delay: 500, callback: () => { this.playerHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
+      }
+
+
+    });
 
     // Make enemy walk forward
     this.enemy.setVelocityX(-50); // Walk towards the player at a slow speed
@@ -225,7 +274,9 @@ export default class PlatformerScene extends Phaser.Scene {
         },
       });
       gameOverText.setOrigin(0.5, 0.5);
+    }
 
+    if (this.enemyHealth <= 0) {
       // Go to ending scene
       this.scene.start("ending", {
         playerHealth: this.playerHealth,
@@ -264,56 +315,6 @@ export default class PlatformerScene extends Phaser.Scene {
     } else {
       this.player.setVelocityX(0);
       this.player.anims.play("stand", true);
-    }
-  }
-
-  handleCollision(
-    player: Phaser.GameObjects.GameObject,
-    enemy: Phaser.GameObjects.GameObject
-  ) {
-    console.log('handleCollision triggered');
-    if (this.gameover) return; // Prevent player movement when game is over
-    if (!this.playerHealthText || !this.enemyHealthText) return;
-
-    // Cast to expected types
-    const playerSprite = player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-    const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-
-    let isEnemyAttacking = false;
-    const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
-    if (enemySprite.anims && enemySprite.anims.currentAnim) {
-      isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
-    }
-
-    // Check if player is punching
-    if (!this.enemyHitCooldown && isPlayerPunching) {
-      this.enemyHealth -= 10;
-      this.enemyHealthText.setText("Ninja: " + this.enemyHealth + "%");
-      // Apply knockback to the enemy
-      enemySprite.setVelocityX(160); // Knockback enemy to the right
-      this.enemyHitCooldown = true; // Set cooldown flag
-      this.time.addEvent({ delay: 500, callback: () => { this.enemyHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
-    }
-
-    // Check if enemy is attacking
-    if (!this.playerHitCooldown && isEnemyAttacking) {
-      this.playerHealth -= 10;
-      this.playerHealthText.setText("BUK: " + this.playerHealth + "%");
-
-      // Determine knockback direction based on player and enemy positions
-      playerSprite.anims.play("bukPunched", true);
-      const knockbackDirection = playerSprite.x < enemySprite.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
-      playerSprite.setVelocityX(knockbackDirection);
-
-      this.playerHitCooldown = true; // Set cooldown flag
-      playerSprite.setVelocityX(0); // Stop player movement when hit
-
-      // Reset player state after bukPunched animation completes
-      playerSprite.once('animationcomplete', () => {
-        playerSprite.anims.play('stand', true); // Reset to stand animation
-      });
-
-      this.time.addEvent({ delay: 500, callback: () => { this.playerHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
     }
   }
 }
