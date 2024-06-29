@@ -29,7 +29,7 @@ export default class PlatformerScene extends Phaser.Scene {
   preload() {
     this.load.image("bg", "assets/bukring.jpg");
     this.load.atlas('buk', 'assets/buk.png', 'assets/buk.json');
-    this.load.atlas('enemy', 'assets/enemy.png', 'assets/enemyAttack.json');
+    this.load.atlas('enemy', 'assets/Enemy.png', 'assets/enemyAttack.json');
   }
 
   create() {
