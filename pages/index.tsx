@@ -22,10 +22,10 @@ const Home: NextPage = () => {
         "../components/StartScene"
       );
 
-      // import dynamically game scenes
       const { default: PlatformerScene } = await import(
         "../components/PlatformerScene"
       );
+
       const { default: EndingScene } = await import(
         "../components/EndingScene"
       );
@@ -57,18 +57,7 @@ const Home: NextPage = () => {
       setGame(phaserGame);
     }
     initPhaser();
-  }, []);
-
-  // const address = useAddress();
-
-  // // Fetch the NFT collection from thirdweb via it's contract address.
-  // const { contract: nftCollection } = useContract(
-  //   // Replace this with your NFT Collection contract address
-  //   process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS,
-  //   "nft-collection"
-  // );
-
- // const { data: nfts, isLoading: loadingNfts } = useNFTs(nftCollection);
+  }, [game]);
 
   return (
     <div className={styles.container}>
@@ -76,7 +65,8 @@ const Home: NextPage = () => {
       <div id="app" key="app">
         {/* the game will be rendered here */}
       </div>
-     <a href="http://www.buk.world"> <h3>www.buk.world</h3></a>
+      <p>Arrows to move left and right, down arrow to punch.</p>
+      <a href="http://www.buk.world"> <h3>www.buk.world</h3></a>
     </div>
   );
 };

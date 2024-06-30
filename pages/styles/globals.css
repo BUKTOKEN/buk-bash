@@ -35,7 +35,7 @@ body {
   background: url("mainBackground.png");
   background-size: cover;
   font-family: "Inter", sans-serif;
-  color: var(--white);
+  color: var(--black);
   display: flex;
   margin: 0;
   text-align: center;
@@ -48,6 +48,7 @@ h2 {
 .header {
   background-color: #1c1e21;
   width:40%;
+  color: var(--white);
 }
 
 h3 {
