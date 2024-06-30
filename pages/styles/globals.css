@@ -32,7 +32,7 @@ select {
 }
 
 body {
-  background: url("mainBackground.png");
+  background: url("/assets/mainBackground.png");
   background-size: cover;
   font-family: "Inter", sans-serif;
   color: var(--black);
