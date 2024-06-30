@@ -72,10 +72,11 @@ const Home: NextPage = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.h1}>BUK Bash</h1>
+      <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>
       <div id="app" key="app">
         {/* the game will be rendered here */}
       </div>
+     <a href="http://www.buk.world"> <h3>www.buk.world</h3></a>
     </div>
   );
 };
