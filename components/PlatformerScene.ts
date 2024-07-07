@@ -4,6 +4,7 @@ export default class PlatformerScene extends Phaser.Scene {
   player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody | undefined;
   enemy: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody | undefined;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
+  touchControls: { left: Phaser.GameObjects.Zone, right: Phaser.GameObjects.Zone, punch: Phaser.GameObjects.Zone } | undefined;
   playerHealth = 100;
   enemyHealth = 100;
   playerHealthText: Phaser.GameObjects.Text | undefined;
@@ -52,8 +53,8 @@ export default class PlatformerScene extends Phaser.Scene {
     this.enemy.flipX = true; // Face right
     this.enemy.setOrigin(0.5, 1); // Set the origin point to the bottom center
 
-    // Animations
-    this.anims.create({
+     // Animations
+     this.anims.create({
       key: 'attack',
       frames: [
         { key: 'enemy', frame: 'frame1' },
@@ -163,7 +164,6 @@ export default class PlatformerScene extends Phaser.Scene {
       'frame3': { width: 315, height: 225 },
       'frame4': { width: 270, height: 225 },
     };
-
     // Periodically check to trigger attack
     this.time.addEvent({
       delay: 2000, // Check every 2 seconds
@@ -184,62 +184,127 @@ export default class PlatformerScene extends Phaser.Scene {
       color: "#fff",
     });
 
-    // this.physics.add.collider(this.player, platforms);
-    // this.physics.add.collider(this.enemy, platforms);
-    this.physics.add.collider(this.player, this.enemy);
-    //   this.physics.add.overlap(this.player, this.enemy, this.handleCollision as ArcadePhysicsCallback, true);
-
-    this.physics.add.overlap(this.player, this.enemy, (player, enemy) => {
-      console.log('handleCollision triggered');
-      if (this.gameover) return; // Prevent player movement when game is over
-      if (!this.playerHealthText || !this.enemyHealthText) return;
-
-      // Cast to expected types
-      const playerSprite = player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-      const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-
-      let isEnemyAttacking = false;
-      const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
-      if (enemySprite.anims && enemySprite.anims.currentAnim) {
-        isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
-      }
-
-      // Check if player is punching
-      if (!this.enemyHitCooldown && isPlayerPunching) {
-        this.enemyHealth -= 10;
-        this.enemyHealthText.setText("Ninja: " + this.enemyHealth + "%");
-        // Apply knockback to the enemy
-        enemySprite.setVelocityX(160); // Knockback enemy to the right
-        this.enemyHitCooldown = true; // Set cooldown flag
-        this.time.addEvent({ delay: 500, callback: () => { this.enemyHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
-      }
-
-      // Check if enemy is attacking
-      if (!this.playerHitCooldown && isEnemyAttacking) {
-        this.playerHealth -= 10;
-        this.playerHealthText.setText("BUK: " + this.playerHealth + "%");
-
-        // Determine knockback direction based on player and enemy positions
-        playerSprite.anims.play("bukPunched", true);
-        const knockbackDirection = playerSprite.x < enemySprite.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
-        playerSprite.setVelocityX(knockbackDirection);
-
-        this.playerHitCooldown = true; // Set cooldown flag
-        playerSprite.setVelocityX(0); // Stop player movement when hit
-
-        // Reset player state after bukPunched animation completes
-        playerSprite.once('animationcomplete', () => {
-          playerSprite.anims.play('stand', true); // Reset to stand animation
+        // this.physics.add.collider(this.enemy, platforms);
+        this.physics.add.collider(this.player, this.enemy);
+        //   this.physics.add.overlap(this.player, this.enemy, this.handleCollision as ArcadePhysicsCallback, true);
+    
+        this.physics.add.overlap(this.player, this.enemy, (player, enemy) => {
+          console.log('handleCollision triggered');
+          if (this.gameover) return; // Prevent player movement when game is over
+          if (!this.playerHealthText || !this.enemyHealthText) return;
+    
+          // Cast to expected types
+          const playerSprite = player as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+          const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    
+          let isEnemyAttacking = false;
+          const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
+          if (enemySprite.anims && enemySprite.anims.currentAnim) {
+            isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
+          }
+    
+          // Check if player is punching
+          if (!this.enemyHitCooldown && isPlayerPunching) {
+            this.enemyHealth -= 10;
+            this.enemyHealthText.setText("Ninja: " + this.enemyHealth + "%");
+            // Apply knockback to the enemy
+            enemySprite.setVelocityX(160); // Knockback enemy to the right
+            this.enemyHitCooldown = true; // Set cooldown flag
+            this.time.addEvent({ delay: 500, callback: () => { this.enemyHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
+          }
+    
+          // Check if enemy is attacking
+          if (!this.playerHitCooldown && isEnemyAttacking) {
+            this.playerHealth -= 10;
+            this.playerHealthText.setText("BUK: " + this.playerHealth + "%");
+    
+            // Determine knockback direction based on player and enemy positions
+            playerSprite.anims.play("bukPunched", true);
+            const knockbackDirection = playerSprite.x < enemySprite.x ? -160 : 160; // Knockback player in the opposite direction of the enemy
+            playerSprite.setVelocityX(knockbackDirection);
+    
+            this.playerHitCooldown = true; // Set cooldown flag
+            playerSprite.setVelocityX(0); // Stop player movement when hit
+    
+            // Reset player state after bukPunched animation completes
+            playerSprite.once('animationcomplete', () => {
+              playerSprite.anims.play('stand', true); // Reset to stand animation
+            });
+    
+            this.time.addEvent({ delay: 500, callback: () => { this.playerHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
+          } 
         });
-
-        this.time.addEvent({ delay: 500, callback: () => { this.playerHitCooldown = false; }, callbackScope: this }); // Reset flag after 500ms
-      }
-
-
-    });
 
     // Make enemy walk forward
     this.enemy.setVelocityX(-50); // Walk towards the player at a slow speed
+
+    // Touch controls
+    this.createTouchControls();
+
+    // Handle screen resize
+    this.scale.on('resize', this.resize, this);
+  }
+
+  createTouchControls() {
+    const width = this.scale.width;
+    const height = this.scale.height;
+
+    // Create zones for touch controls
+    this.touchControls = {
+      left: this.add.zone(width * 0.1, height * 0.9, width * 0.2, height * 0.1).setOrigin(0).setInteractive(),
+      right: this.add.zone(width * 0.3, height * 0.9, width * 0.2, height * 0.1).setOrigin(0).setInteractive(),
+      punch: this.add.zone(width * 0.8, height * 0.9, width * 0.2, height * 0.1).setOrigin(0).setInteractive()
+    };
+
+    // Add touch event listeners
+    this.touchControls.left.on('pointerdown', () => this.handleTouch('left'), this);
+    this.touchControls.right.on('pointerdown', () => this.handleTouch('right'), this);
+    this.touchControls.punch.on('pointerdown', () => this.handleTouch('punch'), this);
+
+    // Add touch end listeners
+    this.touchControls.left.on('pointerup', () => this.stopTouch('left'), this);
+    this.touchControls.right.on('pointerup', () => this.stopTouch('right'), this);
+    this.touchControls.punch.on('pointerup', () => this.stopTouch('punch'), this);
+  }
+
+  handleTouch(action: string) {
+    switch (action) {
+      case 'left':
+        this.player?.setVelocityX(-160);
+        this.player?.anims.play("left", true);
+        break;
+      case 'right':
+        this.player?.setVelocityX(160);
+        this.player?.anims.play("right", true);
+        break;
+      case 'punch':
+        this.player?.setVelocityX(0);
+        this.player?.anims.play("bukPunch", true);
+        break;
+    }
+  }
+
+  stopTouch(action: string) {
+    if (action === 'left' || action === 'right' || action === 'punch') {
+      this.player?.setVelocityX(0);
+      this.player?.anims.play("stand", true);
+    }
+  }
+
+  resize(gameSize: any, baseSize: any, displaySize: any, resolution: any) {
+    const width = gameSize.width;
+    const height = gameSize.height;
+
+    if (this.touchControls) {
+      // Adjust the touch control zones on resize
+      this.touchControls.left.setPosition(width * 0.1, height * 0.9);
+      this.touchControls.right.setPosition(width * 0.3, height * 0.9);
+      this.touchControls.punch.setPosition(width * 0.8, height * 0.9);
+
+      this.touchControls.left.setSize(width * 0.2, height * 0.1);
+      this.touchControls.right.setSize(width * 0.2, height * 0.1);
+      this.touchControls.punch.setSize(width * 0.2, height * 0.1);
+    }
   }
 
   maybeAttack(): void {
@@ -255,54 +320,54 @@ export default class PlatformerScene extends Phaser.Scene {
   update(time: number): void {
     if (!this.player || !this.cursors) return;
 
-    // Game over
-    if (this.playerHealth <= 0 && !this.gameover) {
-      this.gameover = true;
-      this.player.play("bukKo");
-      this.player.setVelocityX(0);
-      this.enemy?.play('enemyStand');
-      this.enemy?.setVelocityX(0); // Stop the enemy
+    // Game over logic (same as before, omitted for brevity)
+ if (this.playerHealth <= 0 && !this.gameover) {
+  this.gameover = true;
+  this.player.play("bukKo");
+  this.player.setVelocityX(0);
+  this.enemy?.play('enemyStand');
+  this.enemy?.setVelocityX(0); // Stop the enemy
 
-      const gameOverText = this.add.text(400, 300, "GAME OVER!", {
-        fontSize: "32px",
-        fontFamily: "Arial",
-        color: "#ffffff",
-        backgroundColor: "#000000",
-        padding: {
-          x: 20,
-          y: 10,
-        },
-      });
-      gameOverText.setOrigin(0.5, 0.5);
-    }
+  const gameOverText = this.add.text(400, 300, "GAME OVER!", {
+    fontSize: "32px",
+    fontFamily: "Arial",
+    color: "#ffffff",
+    backgroundColor: "#000000",
+    padding: {
+      x: 20,
+      y: 10,
+    },
+  });
+  gameOverText.setOrigin(0.5, 0.5);
+}
 
-    if (this.enemyHealth <= 0) {
-      // Go to ending scene
-      this.scene.start("ending", {
-        playerHealth: this.playerHealth,
-        enemyHealth: this.enemyHealth,
-        recordTime: time.toFixed(),
-        playerWallet: this.playerWallet,
-        userAddress: this.userAddress
-      });
-    }
+if (this.enemyHealth <= 0) {
+  // Go to ending scene
+  this.scene.start("ending", {
+    playerHealth: this.playerHealth,
+    enemyHealth: this.enemyHealth,
+    recordTime: time.toFixed(),
+    playerWallet: this.playerWallet,
+    userAddress: this.userAddress
+  });
+}
 
-    // Check if the player and enemy exist before accessing anims
-    if (this.player.anims?.currentFrame) {
-      const playerFrame = this.player.anims.currentFrame.frame.name;
-      if (this.frameSizes[playerFrame]) {
-        this.player.setSize(this.frameSizes[playerFrame].width, this.frameSizes[playerFrame].height);
-      }
-    }
+// Check if the player and enemy exist before accessing anims
+if (this.player.anims?.currentFrame) {
+  const playerFrame = this.player.anims.currentFrame.frame.name;
+  if (this.frameSizes[playerFrame]) {
+    this.player.setSize(this.frameSizes[playerFrame].width, this.frameSizes[playerFrame].height);
+  }
+}
 
-    // if (this.enemy?.anims?.currentFrame) {
-    //   const enemyFrame = this.enemy.anims.currentFrame.frame.name;
-    //   if (this.enemyFrameSizes[enemyFrame]) {
-    //     this.enemy.setSize(this.enemyFrameSizes[enemyFrame].width, this.enemyFrameSizes[enemyFrame].height);
-    //   }
-    // }
+// if (this.enemy?.anims?.currentFrame) {
+//   const enemyFrame = this.enemy.anims.currentFrame.frame.name;
+//   if (this.enemyFrameSizes[enemyFrame]) {
+//     this.enemy.setSize(this.enemyFrameSizes[enemyFrame].width, this.enemyFrameSizes[enemyFrame].height);
+//   }
+// }
 
-    // Controls
+    // Handle both keyboard and touch controls
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-160);
       this.player.anims.play("left", true);
