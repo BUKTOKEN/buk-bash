@@ -13,9 +13,15 @@ const Home: NextPage = () => {
   const [game, setGame] = useState<GameType>();
 
   const isMobile = () => {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600);
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isOpera = navigator.userAgent.indexOf('OPR/') >= 0; // Check for Opera
+    return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600) || isOpera;
   };
+  
+  // const isMobile = () => {
+  //   const userAgent = navigator.userAgent || navigator.vendor;
+  //   return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600);
+  // };
 
   useEffect(() => {
     // import dynamically phaser sdk
