@@ -12,6 +12,11 @@ import styles from "./styles/Home.module.css";
 const Home: NextPage = () => {
   const [game, setGame] = useState<GameType>();
 
+  const isMobile = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600);
+  };
+
   useEffect(() => {
     // import dynamically phaser sdk
     async function initPhaser() {
@@ -35,6 +40,9 @@ const Home: NextPage = () => {
         return;
       }
 
+      // Determine if the user is on a mobile device
+      const mobile = isMobile();
+
       // create new phaser game
       const phaserGame = new Phaser.Game({
         type: Phaser.AUTO,
@@ -51,12 +59,32 @@ const Home: NextPage = () => {
         dom: {
           createContainer: true,
         },
+        scale: mobile
+          ? {
+              mode: Phaser.Scale.RESIZE,
+              autoCenter: Phaser.Scale.CENTER_BOTH,
+            }
+          : undefined, // No scaling for desktop
         scene: [StartScene, PlatformerScene, EndingScene],
       });
 
+      if (mobile) {
+        window.addEventListener("resize", () => {
+          phaserGame.scale.refresh();
+        });
+      }
+
       setGame(phaserGame);
     }
+
     initPhaser();
+
+    // If on mobile, remove extra elements
+    if (isMobile()) {
+      document.querySelector(".header")?.remove();
+      document.querySelector("p")?.remove();
+      document.querySelector("a")?.remove();
+    }
   }, [game]);
 
   return (
