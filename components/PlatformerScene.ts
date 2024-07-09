@@ -254,6 +254,10 @@ export default class PlatformerScene extends Phaser.Scene {
       }
     });
 
+          // Handle screen resize
+          this.scale.on('resize', this.resize, this);
+          this.resize({ width: this.scale.width, height: this.scale.height }); // Initial resize
+          
     // Touch controls for mobile devices
     if (isMobile()) {
       this.touchControls = {
@@ -301,6 +305,22 @@ export default class PlatformerScene extends Phaser.Scene {
 
     if (this.cursors?.down?.isDown) {
       this.player?.anims.play("bukPunch", true);
+    }
+  }
+
+  resize(gameSize: any) {
+    const width = gameSize.width;
+    const height = gameSize.height;
+
+    // Adjust your game elements based on the new width and height
+    if (this.touchControls) {
+      this.touchControls.left.setPosition(width * 0.1, height * 0.9);
+      this.touchControls.right.setPosition(width * 0.3, height * 0.9);
+      this.touchControls.punch.setPosition(width * 0.8, height * 0.9);
+
+      this.touchControls.left.setSize(width * 0.2, height * 0.1);
+      this.touchControls.right.setSize(width * 0.2, height * 0.1);
+      this.touchControls.punch.setSize(width * 0.2, height * 0.1);
     }
   }
 

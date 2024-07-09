@@ -69,6 +69,8 @@ const Home: NextPage = () => {
           ? {
               mode: Phaser.Scale.RESIZE,
               autoCenter: Phaser.Scale.CENTER_BOTH,
+              width: '100%',
+              height: '100%',
             }
           : undefined, // No scaling for desktop
         scene: [StartScene, PlatformerScene, EndingScene],
