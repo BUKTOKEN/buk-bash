@@ -3,9 +3,17 @@ import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
 import { CoinbaseWallet } from "@thirdweb-dev/wallets";
 
+// Utility function to detect mobile devices
+const isMobile = () => {
+  return /Mobi|Android/i.test(navigator.userAgent);
+};
+
 export default class StartScene extends Phaser.Scene {
   wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
+
+  private connectButton: Phaser.GameObjects.Text | undefined;
+  private backgroundImage: Phaser.GameObjects.Image | undefined;
 
   constructor() {
     super({ key: "start" });
@@ -16,10 +24,14 @@ export default class StartScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 280, "beachbg");
+    // Add background image and flip if mobile
+    this.backgroundImage = this.add.image(400, 280, "beachbg");
+    if (isMobile()) {
+      this.backgroundImage.setFlipX(true);
+    }
 
     // Create a button to connect wallet
-    const connectButton = this.add.text(400, 300, "Connect Wallet", {
+    this.connectButton = this.add.text(400, 300, "Connect Wallet", {
       fontSize: "32px",
       fontFamily: "Arial",
       color: "#ffffff",
@@ -29,12 +41,36 @@ export default class StartScene extends Phaser.Scene {
         y: 10,
       },
     });
-    connectButton.setOrigin(0.5);
-    connectButton.setInteractive();
+    this.connectButton.setOrigin(0.5);
+    this.connectButton.setInteractive();
 
-    connectButton.on("pointerup", () => {
+    this.connectButton.on("pointerup", () => {
       this.connectWallet();
     });
+
+    // Adjust scaling and resizing for mobile
+    this.scale.on('resize', this.resize, this);
+    this.resize({ width: this.scale.width, height: this.scale.height }); // Initial resize
+
+    if (isMobile()) {
+      this.scale.scaleMode = Phaser.Scale.FIT;
+      this.scale.refresh();
+    }
+  }
+
+  resize(gameSize: any) {
+    const width = gameSize.width;
+    const height = gameSize.height;
+
+    // Reposition and resize the background image
+    if (this.backgroundImage) {
+      this.backgroundImage.setPosition(width / 2, height / 2).setDisplaySize(width, height);
+    }
+
+    // Reposition the connect button
+    if (this.connectButton) {
+      this.connectButton.setPosition(width / 2, height / 2);
+    }
   }
 
   connectWallet = async () => {
@@ -68,7 +104,7 @@ export default class StartScene extends Phaser.Scene {
   };
 
   displayMessage(message: string) {
-    this.add.text(400, 450, message, {
+    this.add.text(this.scale.width / 2, this.scale.height * 0.8, message, {
       fontSize: "24px",
       fontFamily: "Arial",
       color: "#000",
