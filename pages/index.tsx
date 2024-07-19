@@ -84,9 +84,11 @@ const Home: NextPage = () => {
 
     // If on mobile, remove extra elements
     if (isMobile()) {
+      document.querySelector("dev")?.remove();
       document.querySelector(".header")?.remove();
       document.querySelector("p")?.remove();
       document.querySelector("a")?.remove();
+      document.querySelector("span")?.remove();
     }
   }, [game]);
 
