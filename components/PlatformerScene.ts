@@ -19,6 +19,8 @@ export default class PlatformerScene extends Phaser.Scene {
   frameSizes: any;
   enemyFrameSizes: any;
 
+  private backgroundImage: Phaser.GameObjects.Image | undefined;
+
   constructor() {
     super({ key: "platformer" });
   }
@@ -36,7 +38,10 @@ export default class PlatformerScene extends Phaser.Scene {
 
   create() {
     // Background
-    this.add.image(400, 280, "bg");
+    this.backgroundImage = this.add.image(400, 280, "bg");
+    if (isMobile()) {
+      this.backgroundImage.setFlipX(true);
+    }
 
     // Platform
     const platforms = this.physics.add.staticGroup();
@@ -257,7 +262,7 @@ export default class PlatformerScene extends Phaser.Scene {
           // Handle screen resize
           this.scale.on('resize', this.resize, this);
           this.resize({ width: this.scale.width, height: this.scale.height }); // Initial resize
-          
+
     // Touch controls for mobile devices
     if (isMobile()) {
       this.touchControls = {

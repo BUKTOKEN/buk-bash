@@ -231,3 +231,7 @@
   color: grey;
   cursor: pointer;
 }
+
+/* automate addressbar */
+.address-top .toolbar-addressbar {position:absolute; left:0; right:0; top:0; transition: top 0s 0s !important;} 
+.address-top #header:not(:hover) ~ #main .toolbar-addressbar:not(:focus-within):not(:hover) {top:-34px; transition: top .1s linear .7s !important;}
