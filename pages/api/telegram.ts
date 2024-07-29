@@ -1,8 +1,4 @@
 import { Telegraf } from 'telegraf';
-import { createServer, IncomingMessage, ServerResponse } from 'http';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
 const secretPath = '/bukinbash'; // Change this to your secret path
