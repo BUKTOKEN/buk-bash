@@ -18,7 +18,7 @@ bot.start((ctx) => {
 bot.launch();
 
 // Set webhook
-bot.telegram.setWebhook(`https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app/${secretPath}`);
+bot.telegram.setWebhook(`https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app${secretPath}`);
 
 // Create a native Node.js HTTP server
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
@@ -45,7 +45,7 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     res.end(JSON.stringify({ status: 'not found' }));
   }
 });
-
+console.log('found');
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
