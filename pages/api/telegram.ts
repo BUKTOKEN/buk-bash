@@ -8,8 +8,8 @@ const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
 const bot = new Telegraf(BOT_TOKEN);
 
 bot.start((ctx) => {
-  ctx.reply('Welcome! Click the link below to play the game.');
-  ctx.reply('https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app');
+  ctx.reply('Welcome! Click the link below to play the game. https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app');
+ // ctx.reply('https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app');
 });
 
 bot.launch();
