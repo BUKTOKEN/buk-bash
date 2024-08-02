@@ -1,16 +1,30 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Telegraf } from 'telegraf';
 import * as dotenv from 'dotenv';
+const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup')
 
 dotenv.config();
 
 const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
 const bot = new Telegraf(BOT_TOKEN);
 
-bot.start((ctx) => {
-  ctx.reply('Welcome! Click the link below to play the game.');
-  ctx.reply('https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app');
-});
+const gameShortName = 'buk-bash'
+const gameUrl = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app'
+
+const markup = Extra.markup(
+  Markup.inlineKeyboard([
+    Markup.gameButton('ðŸŽ® Play now!'),
+    Markup.urlButton('Telegraf help', 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app')
+  ])
+)
+
+bot.start(({ replyWithGame }) => replyWithGame(gameShortName))
+// bot.start((ctx) => {
+//   ctx.replyWithGame();
+//   ctx.reply('Welcome! Click the link below to play the game.');
+//   ctx.reply('https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app');
+// });
 
 bot.launch();
 
