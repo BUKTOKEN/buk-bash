@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 dotenv.config();
 
 const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
-const GAME_URL = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app'; // Replace with your game's URL
+const GAME_URL = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app';
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -24,6 +24,7 @@ bot.start((ctx) => {
 bot.launch();
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log(req);
   if (req.method === 'POST') {
     try {
       bot.handleUpdate(req.body);
