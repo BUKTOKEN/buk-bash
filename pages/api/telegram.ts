@@ -1,32 +1,42 @@
 import { Telegraf } from 'telegraf';
 import * as dotenv from 'dotenv';
+import { IncomingMessage, ServerResponse, createServer } from 'node:http';
 
 dotenv.config();
 
 const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
 const GAME_URL = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app'; // Replace with your game's URL
 
-const bot = new Telegraf(BOT_TOKEN);
-console.log('trigger');
-bot.start((ctx) => {
-  ctx.reply('Welcome! Click the button below to play the game.', {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'Play Game', url: GAME_URL }
-        ]
-      ]
-    }
+const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+  if (req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+
+    const bot = new Telegraf(BOT_TOKEN);
+    console.log('trigger');
+    bot.start((ctx) => {
+      ctx.reply('Welcome! Click the button below to play the game.', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'Play Game', url: GAME_URL }
+            ]
+          ]
+        }
+      });
+    });
+
+    bot.launch();
+
+    console.log('Bot is running...');
+
+    // Enable graceful stop
+    process.once('SIGINT', () => bot.stop('SIGINT'));
+    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  }
   });
-});
-
-bot.launch();
-
-console.log('Bot is running...');
-
-// Enable graceful stop
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 
 // import { NextApiRequest, NextApiResponse } from 'next';
@@ -131,4 +141,3 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 // };
 
 // export default handler;
-
