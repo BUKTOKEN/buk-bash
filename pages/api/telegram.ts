@@ -22,7 +22,13 @@ bot.start((ctx) => {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      await bot.handleUpdate(req.body);
+      const update = req.body;
+
+      // Ensure that the update contains the 'message' field
+      if ('message' in update || 'callback_query' in update || 'inline_query' in update) {
+        await bot.handleUpdate(update);
+      }
+
       res.status(200).json({ status: 'ok' });
     } catch (error) {
       console.error('Error handling update:', error);
@@ -148,3 +154,4 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 // };
 
 // export default handler;
+
