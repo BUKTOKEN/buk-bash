@@ -8,11 +8,11 @@ const BOT_TOKEN = process.env.PRIVATE_TELEGRAM!;
 const GAME_URL = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app'; // Replace with your game's URL
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-  if (req.method === 'POST') {
-    let body = '';
-    req.on('data', (chunk) => {
-      body += chunk.toString();
-    });
+  // if (req.method === 'POST') {
+  //   let body = '';
+  //   req.on('data', (chunk) => {
+  //     body += chunk.toString();
+  //   });
 
     const bot = new Telegraf(BOT_TOKEN);
     console.log('trigger');
@@ -35,7 +35,7 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     // Enable graceful stop
     process.once('SIGINT', () => bot.stop('SIGINT'));
     process.once('SIGTERM', () => bot.stop('SIGTERM'));
-  }
+  // }
   });
 
 
