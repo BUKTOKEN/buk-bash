@@ -13,34 +13,36 @@ bot.start((ctx) => {
   ctx.reply('Welcome! Click the button below to play the game.', {
     reply_markup: {
       inline_keyboard: [
-        [
-          { text: 'Play Game', url: GAME_URL }
-        ]
+        [{ text: 'Play Game', url: GAME_URL }]
       ]
     }
   });
 });
 
-bot.launch();
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log(req);
-  // if (req.method === 'POST') {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
     try {
-      bot.handleUpdate(req.body);
+      await bot.handleUpdate(req.body);
       res.status(200).json({ status: 'ok' });
     } catch (error) {
       console.error('Error handling update:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-//  } else {
- //   res.status(404).json({ error: 'Not Found' });
-  // }
+  } else {
+    res.setHeader('Allow', ['POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}
+
+// Start the bot only once in non-production environments
+if (process.env.NODE_ENV !== 'production') {
+  bot.launch();
 }
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
 
 
