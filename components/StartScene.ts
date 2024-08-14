@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import { CoinbaseWallet } from "@thirdweb-dev/wallets";
+import { CoinbaseWallet  } from "@thirdweb-dev/wallets";
 
 // Utility function to detect mobile devices
 const isMobile = () => {
@@ -24,11 +24,20 @@ export default class StartScene extends Phaser.Scene {
   }
 
   create() {
+    const cameraWidth = this.cameras.main.width
+const cameraHeight = this.cameras.main.height
+
+const bg = this.add.image(0, 0, 'beachbg')
+.setOrigin(0)
+bg.setFlipX(true);
+
+
+bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
     // Add background image and flip if mobile
-    this.backgroundImage = this.add.image(400, 280, "beachbg");
-    if (isMobile()) {
-      this.backgroundImage.setFlipX(true);
-    }
+   // this.backgroundImage = this.add.image(400, 280, "beachbg");
+  //  if (isMobile()) {
+     
+   // }
 
     // Create a button to connect wallet
     this.connectButton = this.add.text(400, 300, "Connect Wallet", {
