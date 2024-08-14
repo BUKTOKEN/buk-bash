@@ -30,8 +30,6 @@ const cameraHeight = this.cameras.main.height
 const bg = this.add.image(0, 0, 'beachbg')
 .setOrigin(0)
 bg.setFlipX(true);
-
-
 bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
     // Add background image and flip if mobile
    // this.backgroundImage = this.add.image(400, 280, "beachbg");
@@ -40,7 +38,7 @@ bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
    // }
 
     // Create a button to connect wallet
-    this.connectButton = this.add.text(400, 300, "Connect Wallet", {
+    this.connectButton = this.add.text(cameraWidth / bg.width, cameraHeight / bg.height, "Connect Wallet", {
       fontSize: "32px",
       fontFamily: "Arial",
       color: "#ffffff",
