@@ -68,7 +68,7 @@ const Home: NextPage = () => {
               height: '100%',
             }
           : undefined, // No scaling for desktop
-        scene: [StartScene, PlatformerScene, EndingScene],
+        scene: [ PlatformerScene, EndingScene],
       });
 
       if (mobile) {
