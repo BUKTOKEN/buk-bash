@@ -284,7 +284,6 @@ export default class PlatformerScene extends Phaser.Scene {
       this.touchControls.right.on('pointerup', () => {
         this.cursors!.right!.isDown = false;
       });
-
       this.touchControls.punch.on('pointerdown', () => {
         this.cursors!.down!.isDown = true;
       });
@@ -295,9 +294,13 @@ export default class PlatformerScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.gameover) return; // Prevent player movement when game is over
-
-    if (this.cursors?.left?.isDown) {
+    if (this.gameover) return;
+  
+    // Priority: Handle punch action first
+    if (this.cursors?.down?.isDown) {
+      this.player?.anims.play("bukPunch", true);
+      this.player?.setVelocityX(0);
+    } else if (this.cursors?.left?.isDown) {
       this.player?.setVelocityX(-160);
       this.player?.anims.play("left", true);
     } else if (this.cursors?.right?.isDown) {
@@ -306,10 +309,6 @@ export default class PlatformerScene extends Phaser.Scene {
     } else {
       this.player?.setVelocityX(0);
       this.player?.anims.play("stand");
-    }
-
-    if (this.cursors?.down?.isDown) {
-      this.player?.anims.play("bukPunch", true);
     }
   }
 
