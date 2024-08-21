@@ -34,6 +34,8 @@ export default class PlatformerScene extends Phaser.Scene {
     this.load.image("bg", "assets/bukring.jpg");
     this.load.atlas('buk', 'assets/buk.png', 'assets/buk.json');
     this.load.atlas('enemy', 'assets/Enemy.png', 'assets/enemyAttack.json');
+    this.load.image('punch', 'assets/glove.png');
+    this.load.image('forward', 'assets/bukforward.png');
   }
 
   create() {
@@ -43,11 +45,84 @@ export default class PlatformerScene extends Phaser.Scene {
       this.backgroundImage.setFlipX(true);
     }
 
+    const punchButton = this.add.image(this.scale.width - 50, this.scale.height - 50, 'punch').setInteractive();
+
+    // Optionally, scale the button
+    punchButton.setScale(0.5);
+  
+    // Add interactivity
+    punchButton.on('pointerover', () => {
+      punchButton.setTint(0x44ff44); // Change color on hover
+    });
+  
+    punchButton.on('pointerout', () => {
+      punchButton.clearTint(); // Remove tint when not hovering
+    });
+  
+    punchButton.on('pointerdown', () => {
+      punchButton.setTint(0xff4444); // Change color when clicked
+      this.cursors!.down!.isDown = true;
+    });
+  
+    punchButton.on('pointerup', () => {
+      punchButton.clearTint(); // Remove tint when the click is released
+  
+      // Call your custom function when the button is clicked
+      this.cursors!.down!.isDown = false;
+    });
+
+    const forwardButton = this.add.image(this.scale.width - 50, this.scale.height / 2, 'forward').setInteractive();
+  
+    // Add interactivity
+    forwardButton.on('pointerover', () => {
+      forwardButton.setTint(0x44ff44); // Change color on hover
+    });
+  
+    forwardButton.on('pointerout', () => {
+      forwardButton.clearTint(); // Remove tint when not hovering
+    });
+  
+    forwardButton.on('pointerdown', () => {
+      forwardButton.setTint(0xff4444); // Change color when clicked
+      this.cursors!.right!.isDown = true;
+    });
+  
+    forwardButton.on('pointerup', () => {
+      forwardButton.clearTint(); // Remove tint when the click is released
+  
+      // Call your custom function when the button is clicked
+      this.cursors!.right!.isDown = false;
+    });
+
+    const backButton = this.add.image(50, this.scale.height / 2, 'forward').setInteractive();
+  
+    backButton.flipX = true;
+    // Add interactivity
+    backButton.on('pointerover', () => {
+      backButton.setTint(0x44ff44); // Change color on hover
+    });
+  
+    backButton.on('pointerout', () => {
+      backButton.clearTint(); // Remove tint when not hovering
+    });
+  
+    backButton.on('pointerdown', () => {
+      backButton.setTint(0xff4444); // Change color when clicked
+      this.cursors!.left!.isDown = true;
+    });
+  
+    backButton.on('pointerup', () => {
+      backButton.clearTint(); // Remove tint when the click is released
+  
+      // Call your custom function when the button is clicked
+      this.cursors!.left!.isDown = false;
+    });
+
     // Platform
     const platforms = this.physics.add.staticGroup();
 
     // Player
-    this.player = this.physics.add.sprite(100, 450, "buk", 'frame1');
+    this.player = this.physics.add.sprite(150, 450, "buk", 'frame1');
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
 
@@ -264,33 +339,33 @@ export default class PlatformerScene extends Phaser.Scene {
           this.resize({ width: this.scale.width, height: this.scale.height }); // Initial resize
 
     // Touch controls for mobile devices
-    if (isMobile()) {
-      this.touchControls = {
-        left: this.add.zone(0, 0, this.cameras.main.width / 2, this.cameras.main.height).setOrigin(0).setInteractive(),
-        right: this.add.zone(this.cameras.main.width / 2, 0, this.cameras.main.width / 2, this.cameras.main.height).setOrigin(0).setInteractive(),
-        punch: this.add.zone(0, this.cameras.main.height - 100, this.cameras.main.width, 100).setOrigin(0).setInteractive()
-      };
+    // if (isMobile()) {
+    //   this.touchControls = {
+    //     left: this.add.zone(0, 0, this.cameras.main.width / 2, this.cameras.main.height).setOrigin(0).setInteractive(),
+    //     right: this.add.zone(this.cameras.main.width / 2, 0, this.cameras.main.width / 2, this.cameras.main.height).setOrigin(0).setInteractive(),
+    //     punch: this.add.zone(0, this.cameras.main.height - 100, this.cameras.main.width, 100).setOrigin(0).setInteractive()
+    //   };
 
-      this.touchControls.left.on('pointerdown', () => {
-        this.cursors!.left!.isDown = true;
-      });
-      this.touchControls.left.on('pointerup', () => {
-        this.cursors!.left!.isDown = false;
-      });
+    //   this.touchControls.left.on('pointerdown', () => {
+    //     this.cursors!.left!.isDown = true;
+    //   });
+    //   this.touchControls.left.on('pointerup', () => {
+    //     this.cursors!.left!.isDown = false;
+    //   });
 
-      this.touchControls.right.on('pointerdown', () => {
-        this.cursors!.right!.isDown = true;
-      });
-      this.touchControls.right.on('pointerup', () => {
-        this.cursors!.right!.isDown = false;
-      });
-      this.touchControls.punch.on('pointerdown', () => {
-        this.cursors!.down!.isDown = true;
-      });
-      this.touchControls.punch.on('pointerup', () => {
-        this.cursors!.down!.isDown = false;
-      });
-    }
+    //   this.touchControls.right.on('pointerdown', () => {
+    //     this.cursors!.right!.isDown = true;
+    //   });
+    //   this.touchControls.right.on('pointerup', () => {
+    //     this.cursors!.right!.isDown = false;
+    //   });
+    //   this.touchControls.punch.on('pointerdown', () => {
+    //     this.cursors!.down!.isDown = true;
+    //   });
+    //   this.touchControls.punch.on('pointerup', () => {
+    //     this.cursors!.down!.isDown = false;
+    //   });
+    // }
   }
 
   update() {
