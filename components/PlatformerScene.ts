@@ -49,6 +49,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     // Optionally, scale the button
     punchButton.setScale(0.5);
+    punchButton.depth = 5;
   
     // Add interactivity
     punchButton.on('pointerover', () => {
@@ -72,7 +73,7 @@ export default class PlatformerScene extends Phaser.Scene {
     });
 
     const forwardButton = this.add.image(this.scale.width - 50, this.scale.height / 2, 'forward').setInteractive();
-  
+    forwardButton.depth = 5;
     // Add interactivity
     forwardButton.on('pointerover', () => {
       forwardButton.setTint(0x44ff44); // Change color on hover
@@ -96,6 +97,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     const backButton = this.add.image(50, this.scale.height / 2, 'forward').setInteractive();
   
+    backButton.depth = 5;
     backButton.flipX = true;
     // Add interactivity
     backButton.on('pointerover', () => {
@@ -125,6 +127,7 @@ export default class PlatformerScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(150, 450, "buk", 'frame1');
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
+    this.player.depth = 2;
 
     // Enemy
     this.enemy = this.physics.add.sprite(800, 450, 'enemy', 'frame1');
@@ -133,6 +136,7 @@ export default class PlatformerScene extends Phaser.Scene {
     this.enemy.setScale(3); // Scale as needed
     this.enemy.flipX = true; // Face right
     this.enemy.setOrigin(0.5, 1); // Set the origin point to the bottom center
+    this.enemy.depth = 1;
 
     // Animations
     this.anims.create({
