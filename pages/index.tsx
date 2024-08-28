@@ -122,7 +122,7 @@ const Home: NextPage = () => {
         {/* the game will be rendered here */}
       </div>
       <div id="portrait-warning" className="hidden">
-        <img src="/assets/rotate.png" alt="Rotate your device" />
+        <img src="/assets/rotate.png" width="100%" alt="Rotate your device" />
       </div>
       <p>Arrows to move left and right, down arrow to punch.</p>
       <a href="http://www.buk.world"> <h3>www.buk.world</h3></a>
