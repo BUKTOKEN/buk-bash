@@ -11,6 +11,7 @@ const isMobile = () => {
 export default class StartScene extends Phaser.Scene {
   wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
+  bg: Phaser.GameObjects.Image | undefined;
 
   private connectButton: Phaser.GameObjects.Text | undefined;
   private backgroundImage: Phaser.GameObjects.Image | undefined;
@@ -21,16 +22,19 @@ export default class StartScene extends Phaser.Scene {
 
   preload() {
     this.load.image("beachbg", "assets/bukbeachbg.jpg");
+    this.load.image("rotate", "assets/rotate.png");
   }
 
   create() {
     const cameraWidth = this.cameras.main.width
-const cameraHeight = this.cameras.main.height
+    const cameraHeight = this.cameras.main.height
 
-const bg = this.add.image(0, 0, 'beachbg')
-.setOrigin(0)
-bg.setFlipX(true);
-bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
+  this.bg = this.add.image(0, 0, 'beachbg')
+  .setOrigin(0)
+  this.bg.setFlipX(true);
+  this.bg.setScale(Math.max(cameraWidth / this.bg.width, cameraHeight / this.bg.height))
+
+
     // Add background image and flip if mobile
    // this.backgroundImage = this.add.image(400, 280, "beachbg");
   //  if (isMobile()) {
@@ -38,7 +42,7 @@ bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
    // }
 
     // Create a button to connect wallet
-    this.connectButton = this.add.text(cameraWidth / bg.width, cameraHeight / bg.height, "Connect Wallet", {
+    this.connectButton = this.add.text(cameraWidth / this.bg.width, cameraHeight / this.bg.height, "START", {
       fontSize: "32px",
       fontFamily: "Arial",
       color: "#ffffff",
@@ -81,32 +85,32 @@ bg.setScale(Math.max(cameraWidth / bg.width, cameraHeight / bg.height))
   }
 
   connectWallet = async () => {
-    if (!window.ethereum) {
-      this.displayMessage("Please install MetaMask or other wallet");
-      return;
-    }
+    // if (!window.ethereum) {
+    //   this.displayMessage("Please install MetaMask or other wallet");
+    //   return;
+    // }
 
-    try {
-      this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
-      await this.wallet.connect(BaseSepoliaTestnet.chainId);
-      const signer = await this.wallet.getSigner();
-      this.userAddress = await signer.getAddress();
-      this.startGame();
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      this.displayMessage("Error connecting wallet");
-    }
+    // try {
+    //   this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
+    //   await this.wallet.connect(BaseSepoliaTestnet.chainId);
+    //   const signer = await this.wallet.getSigner();
+    //   this.userAddress = await signer.getAddress();
+    //   this.startGame();
+    // } catch (error) {
+    //   console.error("Error connecting wallet:", error);
+    //   this.displayMessage("Error connecting wallet");
+    // }
   };
 
   startGame = async () => {
-    if (!this.wallet || !this.userAddress) {
-      this.displayMessage("Please connect your wallet first");
-      return;
-    }
+    // if (!this.wallet || !this.userAddress) {
+    //   this.displayMessage("Please connect your wallet first");
+    //   return;
+    // }
 
     this.scene.start("platformer", {
-      playerWallet: this.wallet,
-      userAddress: this.userAddress,
+      // playerWallet: this.wallet,
+      // userAddress: this.userAddress,
     });
   };
 

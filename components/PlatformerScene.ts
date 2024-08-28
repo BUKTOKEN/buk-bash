@@ -25,10 +25,10 @@ export default class PlatformerScene extends Phaser.Scene {
     super({ key: "platformer" });
   }
 
-  init(data: any) {
-    this.playerWallet = data.playerWallet;
-    this.userAddress = data.userAddress;
-  }
+  // init(data: any) {
+  //   this.playerWallet = data.playerWallet;
+  //   this.userAddress = data.userAddress;
+  // }
 
   preload() {
     this.load.image("bg", "assets/bukring.jpg");
@@ -305,8 +305,8 @@ export default class PlatformerScene extends Phaser.Scene {
           this.gameover = true;
           setTimeout(() => {
             this.scene.start("ending", {
-              playerWallet: this.playerWallet,
-              userAddress: this.userAddress,
+              // playerWallet: this.playerWallet,
+              // userAddress: this.userAddress,
             });
           }, 1000); // Delay for 1 second before starting the "ending" scene
         }

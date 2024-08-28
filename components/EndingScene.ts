@@ -4,6 +4,9 @@ import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
 import { CoinbaseWallet } from "@thirdweb-dev/wallets";
 
 export default class EndingScene extends Phaser.Scene {
+  displayMessage(arg0: string) {
+    throw new Error("Method not implemented.");
+  }
   wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
   nftTitle: Phaser.GameObjects.Text | undefined;
@@ -12,10 +15,10 @@ export default class EndingScene extends Phaser.Scene {
     super({ key: "ending" });
   }
 
-  init(data: any) {
-    this.wallet = data.playerWallet;
-    this.userAddress = data.userAddress;
-  }
+  // init(data: any) {
+  //   this.wallet = data.playerWallet;
+  //   this.userAddress = data.userAddress;
+  // }
 
   preload() {
     this.load.image("bg", "assets/bukbeachbg.jpg");
@@ -52,13 +55,49 @@ export default class EndingScene extends Phaser.Scene {
   }
 
   mintWithSignature = async () => {
-    if (!this.wallet || !this.userAddress) {
-      this.nftTitle?.setText("Wallet not connected");
+    // if (!this.wallet || !this.userAddress) {
+    //   this.nftTitle?.setText("Wallet not connected");
+    //   return;
+    // }
+    if (!window.ethereum) {
+      this.displayMessage("Please install MetaMask or other wallet");
       return;
     }
 
     try {
+      this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
+      await this.wallet.connect(BaseSepoliaTestnet.chainId);
       const signer = await this.wallet.getSigner();
+      this.userAddress = await signer.getAddress();
+       // Fetch the NFT collection contract
+       const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
+       const nftCollection = await sdk.getContract(
+         process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
+         "nft-collection"
+       );
+ 
+       // Mint NFT with signature
+       const nft = await nftCollection.mint({
+         name: "Level Completion NFT",
+         description: "Completed level 1",
+         image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe", 
+         properties: {
+           level: 1
+         }
+       })
+       if (nft) {
+         this.nftTitle?.setText("NFT minted successfully!");
+       } else {
+         this.nftTitle?.setText("Failed to mint NFT");
+       }
+      //this.startGame();
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      this.displayMessage("Error connecting wallet");
+    }
+
+    // try {
+    //   const signer = await this.wallet.getSigner();
 
       // Make request to server for signed payload
       // const signedPayloadReq = await fetch(`/api/server`, {
@@ -77,30 +116,10 @@ export default class EndingScene extends Phaser.Scene {
      
       // const signedPayload = json.signedPayload;
 
-      // Fetch the NFT collection contract
-      const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
-      const nftCollection = await sdk.getContract(
-        process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
-        "nft-collection"
-      );
-
-      // Mint NFT with signature
-      const nft = await nftCollection.mint({
-        name: "Level Completion NFT",
-        description: "Completed level 1",
-        image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe", 
-        properties: {
-          level: 1
-        }
-      })
-      if (nft) {
-        this.nftTitle?.setText("NFT minted successfully!");
-      } else {
-        this.nftTitle?.setText("Failed to mint NFT");
-      }
-    } catch (error) {
-      console.error("Error minting NFT:", error);
-      this.nftTitle?.setText("Error minting NFT");
-    }
+     
+    // } catch (error) {
+    //   console.error("Error minting NFT:", error);
+    //   this.nftTitle?.setText("Error minting NFT");
+    // }
   };
 }
