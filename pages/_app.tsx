@@ -2,7 +2,6 @@ import { ThirdwebProvider } from "@thirdweb-dev/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import ThirdwebGuideFooter from "../components/guide/ThirdwebGuideFooter";
 import "./styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -19,7 +18,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="keywords" content="buk bash" />
       </Head>
       <Component {...pageProps} />
-      {/* <ThirdwebGuideFooter /> */}
     </ThirdwebProvider>
   );
 }

@@ -13,11 +13,30 @@ const Home: NextPage = () => {
   const [game, setGame] = useState<GameType>();
   const [portraitMode, setPortraitMode] = useState(false);
 
+  // const isMobile = () => {
+  //   const userAgent = navigator.userAgent || navigator.vendor;
+  //   const isOpera = navigator.userAgent.indexOf('OPR/') >= 0; // Check for Opera
+  //   return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600) || isOpera;
+  // };
+
   const isMobile = () => {
-    const userAgent = navigator.userAgent || navigator.vendor;
-    const isOpera = navigator.userAgent.indexOf('OPR/') >= 0; // Check for Opera
-    return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600) || isOpera;
+    if (typeof window === "undefined") {
+      // This check ensures that the code is only run on the client side
+      return false;
+    }
+  
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  
+    // Check for mobile devices by user agent
+    const isMobileDevice = /android|iphone|ipad|ipod|windows phone|blackberry|opera mini|iemobile|mobile/i.test(userAgent);
+  
+    // Fallback check for screen dimensions (useful for tablets or if user agent check fails)
+    const isSmallScreen = window.innerWidth <= 800 && window.innerHeight <= 600;
+  
+    return isMobileDevice || isSmallScreen;
   };
+
+  console.log(isMobile());
 
   useEffect(() => {
     async function initPhaser() {
@@ -39,7 +58,7 @@ const Home: NextPage = () => {
         return;
       }
 
-      const mobile = isMobile();
+      const mobile = isMobile() != null;
 
       const createPhaserGame = () => {
         const phaserGame = new Phaser.Game({
@@ -82,16 +101,13 @@ const Home: NextPage = () => {
           // Landscape mode
           setPortraitMode(false);
           document.getElementById("portrait-warning")?.remove();
-     //     document.getElementById("app")?.classList.remove("hidden");
-
           if (!game) {
             createPhaserGame();
           }
         } else {
           // Portrait mode
           setPortraitMode(true);
-        //  document.getElementById("portrait-warning")?.classList.add("hidden");
-          document.getElementById("app")?.remove();//.classList.add("hidden");
+          document.getElementById("app")?.remove();
         }
       };
 
@@ -118,10 +134,10 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>
-      <div id="app" key="app">
+      <div id="app" key="app" >
         {/* the game will be rendered here */}
       </div>
-      <div id="portrait-warning" className="hidden">
+      <div id="portrait-warning">
         <img src="/assets/rotate.png" width="100%" alt="Rotate your device" />
       </div>
       <p>Arrows to move left and right, down arrow to punch.</p>

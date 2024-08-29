@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import { CoinbaseWallet  } from "@thirdweb-dev/wallets";
+import { CoinbaseWallet } from "@thirdweb-dev/wallets";
 
 // Utility function to detect mobile devices
 const isMobile = () => {
@@ -22,24 +22,16 @@ export default class StartScene extends Phaser.Scene {
 
   preload() {
     this.load.image("beachbg", "assets/bukbeachbg.jpg");
-    this.load.image("rotate", "assets/rotate.png");
   }
 
   create() {
     const cameraWidth = this.cameras.main.width
     const cameraHeight = this.cameras.main.height
 
-  this.bg = this.add.image(0, 0, 'beachbg')
-  .setOrigin(0)
-  this.bg.setFlipX(true);
-  this.bg.setScale(Math.max(cameraWidth / this.bg.width, cameraHeight / this.bg.height))
-
-
-    // Add background image and flip if mobile
-   // this.backgroundImage = this.add.image(400, 280, "beachbg");
-  //  if (isMobile()) {
-     
-   // }
+    this.bg = this.add.image(0, 0, 'beachbg')
+      .setOrigin(0)
+    this.bg.setFlipX(true);
+    this.bg.setScale(Math.max(cameraWidth / this.bg.width, cameraHeight / this.bg.height))
 
     // Create a button to connect wallet
     this.connectButton = this.add.text(cameraWidth / this.bg.width, cameraHeight / this.bg.height, "START", {
@@ -52,11 +44,12 @@ export default class StartScene extends Phaser.Scene {
         y: 10,
       },
     });
+
     this.connectButton.setOrigin(0.5);
     this.connectButton.setInteractive();
 
     this.connectButton.on("pointerup", () => {
-      this.connectWallet();
+      this.startGame();
     });
 
     // Adjust scaling and resizing for mobile
