@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       return false;
     }
   
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const userAgent = navigator.userAgent || navigator.vendor;
   
     // Check for mobile devices by user agent
     const isMobileDevice = /android|iphone|ipad|ipod|windows phone|blackberry|opera mini|iemobile|mobile/i.test(userAgent);
