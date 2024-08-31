@@ -36,8 +36,6 @@ const Home: NextPage = () => {
     return isMobileDevice || isSmallScreen;
   };
 
-  console.log(isMobile());
-
   useEffect(() => {
     async function initPhaser() {
       const Phaser = await import("phaser");
@@ -134,7 +132,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>
-      <div id="app" key="app" >
+      <div id="app" key="app" className={styles.appMobile}>
         {/* the game will be rendered here */}
       </div>
       <div id="portrait-warning">
