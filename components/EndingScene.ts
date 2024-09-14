@@ -10,6 +10,7 @@ export default class EndingScene extends Phaser.Scene {
   wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
   nftTitle: Phaser.GameObjects.Text | undefined;
+  bg: Phaser.GameObjects.Image | undefined;
 
   constructor() {
     super({ key: "ending" });
@@ -25,7 +26,15 @@ export default class EndingScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 280, "bg");
+    const cameraWidth = this.cameras.main.width
+    const cameraHeight = this.cameras.main.height
+
+    this.bg = this.add.image(0, 0, 'bg')
+      .setOrigin(0)
+    this.bg.setFlipX(true);
+    this.bg.setScale(Math.max(cameraWidth / this.bg.width, cameraHeight / this.bg.height))
+
+  //  this.add.image(400, 280, "bg");
 
     // Create a button to mint NFT
     const mintButton = this.add.text(400, 300, "Mint NFT", {
@@ -46,8 +55,8 @@ export default class EndingScene extends Phaser.Scene {
     });
 
     // Text to display minting result
-    this.nftTitle = this.add.text(400, 400, "", {
-      fontSize: "24px",
+    this.nftTitle = this.add.text(cameraWidth / this.bg.width, cameraHeight / this.bg.height, "", {
+      fontSize: "22px",
       fontFamily: "Arial",
       color: "#000",
     });
@@ -59,10 +68,10 @@ export default class EndingScene extends Phaser.Scene {
     //   this.nftTitle?.setText("Wallet not connected");
     //   return;
     // }
-    if (!window.ethereum) {
-      this.displayMessage("Please install MetaMask or other wallet");
-      return;
-    }
+    // if (!window.ethereum) {
+    //   this.displayMessage("Please install MetaMask or other wallet");
+    //   return;
+    // }
 
     try {
       this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
