@@ -10,14 +10,18 @@ const GAME_URL = 'https://buk-bash-git-mobile-buks-projects-c5fbd1d8.vercel.app'
 const bot = new Telegraf(BOT_TOKEN);
 
 bot.start((ctx) => {
-  ctx.reply('Stop BUKin about and clck play', {
+  ctx.reply('Stop BUKin about and click play', {
     reply_markup: {
       inline_keyboard: [
-        [{ text: 'Play Game', url: GAME_URL }]
+        [{
+          text: 'Play Game',
+          web_app: { url: GAME_URL }
+        }]
       ]
     }
   });
 });
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

@@ -11,6 +11,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>BUK Bash</title>
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <meta
           name="description"
           content="BUK Bash - NFT reward"

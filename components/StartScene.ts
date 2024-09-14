@@ -8,6 +8,15 @@ const isMobile = () => {
   return /Mobi|Android/i.test(navigator.userAgent);
 };
 
+// Check if the Telegram Web App API is available
+if (window.Telegram && window.Telegram.WebApp) {
+  const telegram = window.Telegram.WebApp;
+  
+  // Handle the context provided by Telegram
+  telegram.ready();
+  document.body.style.backgroundColor = telegram.colorScheme === 'dark' ? '#000' : '#fff';
+}
+
 export default class StartScene extends Phaser.Scene {
   wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
