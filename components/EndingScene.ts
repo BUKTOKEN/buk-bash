@@ -1,7 +1,8 @@
 import Phaser from "phaser";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import { CoinbaseWallet } from "@thirdweb-dev/wallets";
+import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { BaseSepoliaTestnet, Chain } from "@thirdweb-dev/chains";
+import { CoinbaseWallet, WalletConnect } from "@thirdweb-dev/wallets";
+import { providers } from "ethers";
 
 export default class EndingScene extends Phaser.Scene {
   displayMessage(arg0: string) {
@@ -15,6 +16,7 @@ export default class EndingScene extends Phaser.Scene {
   constructor() {
     super({ key: "ending" });
   }
+
 
   // init(data: any) {
   //   this.wallet = data.playerWallet;
@@ -34,7 +36,7 @@ export default class EndingScene extends Phaser.Scene {
     this.bg.setFlipX(true);
     this.bg.setScale(Math.max(cameraWidth / this.bg.width, cameraHeight / this.bg.height))
 
-  //  this.add.image(400, 280, "bg");
+    //  this.add.image(400, 280, "bg");
 
     // Create a button to mint NFT
     const mintButton = this.add.text(400, 300, "Mint NFT", {
@@ -63,72 +65,116 @@ export default class EndingScene extends Phaser.Scene {
     this.nftTitle.setOrigin(0.5);
   }
 
+  // import { WalletConnect } from "@thirdweb-dev/wallets";
+
   mintWithSignature = async () => {
-    // if (!this.wallet || !this.userAddress) {
-    //   this.nftTitle?.setText("Wallet not connected");
-    //   return;
-    // }
-    // if (!window.ethereum) {
-    //   this.displayMessage("Please install MetaMask or other wallet");
-    //   return;
-    // }
-
     try {
-      this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
-      await this.wallet.connect(BaseSepoliaTestnet.chainId);
-      const signer = await this.wallet.getSigner();
+      // Initialize WalletConnect with the required options
+      const walletConnect = new WalletConnect({
+        chains: [BaseSepoliaTestnet], // Specify the chains you want to support
+        appName: "buk-bash", // Name of your app
+        shouldAutoConnect: true, // Optional: Automatically connect if possible
+      });
+
+      // Connect to the user's wallet via WalletConnect
+      await walletConnect.connect();
+      const signer = await walletConnect.getSigner();
       this.userAddress = await signer.getAddress();
-       // Fetch the NFT collection contract
-       const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
-       const nftCollection = await sdk.getContract(
-         process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
-         "nft-collection"
-       );
- 
-       // Mint NFT with signature
-       const nft = await nftCollection.mint({
-         name: "Level Completion NFT",
-         description: "Completed level 1",
-         image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe", 
-         properties: {
-           level: 1
-         }
-       })
-       if (nft) {
-         this.nftTitle?.setText("NFT minted successfully!");
-       } else {
-         this.nftTitle?.setText("Failed to mint NFT");
-       }
-      //this.startGame();
+
+      // Fetch the NFT collection contract
+      const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
+      const nftCollection = await sdk.getContract(
+        process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
+        "nft-collection"
+      );
+
+      // Mint NFT with signature
+      const nft = await nftCollection.mint({
+        name: "Level Completion NFT",
+        description: "Completed level 1",
+        image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe",
+        properties: {
+          level: 1,
+        },
+      });
+
+      if (nft) {
+        this.nftTitle?.setText("NFT minted successfully!");
+      } else {
+        this.nftTitle?.setText("Failed to mint NFT");
+      }
     } catch (error) {
-      console.error("Error connecting wallet:", error);
-      this.displayMessage("Error connecting wallet");
+      console.error("Error minting NFT:", error);
+      this.displayMessage("Error minting NFT");
     }
-
-    // try {
-    //   const signer = await this.wallet.getSigner();
-
-      // Make request to server for signed payload
-      // const signedPayloadReq = await fetch(`/api/server`, {
-      //   method: "POST",
-      //   body: JSON.stringify({
-      //     playerAddress: this.userAddress,
-      //   }),
-      // });
-
-      // const json = await signedPayloadReq.json();
-
-      // if (!signedPayloadReq.ok) {
-      //   this.nftTitle?.setText(json.error || "Failed to fetch signed payload");
-      //   return;
-      // }
-     
-      // const signedPayload = json.signedPayload;
-
-     
-    // } catch (error) {
-    //   console.error("Error minting NFT:", error);
-    //   this.nftTitle?.setText("Error minting NFT");
-    // }
   };
+
+  // mintWithSignature = async () => {
+  // if (!this.wallet || !this.userAddress) {
+  //   this.nftTitle?.setText("Wallet not connected");
+  //   return;
+  // }
+  // if (!window.ethereum) {
+  //   this.displayMessage("Please install MetaMask or other wallet");
+  //   return;
+  // }
+
+  // try {
+  //   this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
+  //   await this.wallet.connect(BaseSepoliaTestnet.chainId);
+  //   const signer = await this.wallet.getSigner();
+  //   this.userAddress = await signer.getAddress();
+  //    // Fetch the NFT collection contract
+  //    const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
+  //    const nftCollection = await sdk.getContract(
+  //      process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
+  //      "nft-collection"
+  //    );
+
+  //    // Mint NFT with signature
+  //    const nft = await nftCollection.mint({
+  //      name: "Level Completion NFT",
+  //      description: "Completed level 1",
+  //      image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe", 
+  //      properties: {
+  //        level: 1
+  //      }
+  //    })
+  //    if (nft) {
+  //      this.nftTitle?.setText("NFT minted successfully!");
+  //    } else {
+  //      this.nftTitle?.setText("Failed to mint NFT");
+  //    }
+  //   //this.startGame();
+  // } catch (error) {
+  //   console.error("Error connecting wallet:", error);
+  //   this.displayMessage("Error connecting wallet");
+  // }
+
+  // try {
+  //   const signer = await this.wallet.getSigner();
+
+  // Make request to server for signed payload
+  // const signedPayloadReq = await fetch(`/api/server`, {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     playerAddress: this.userAddress,
+  //   }),
+  // });
+
+  // const json = await signedPayloadReq.json();
+
+  // if (!signedPayloadReq.ok) {
+  //   this.nftTitle?.setText(json.error || "Failed to fetch signed payload");
+  //   return;
+  // }
+
+  // const signedPayload = json.signedPayload;
+
+
+  // } catch (error) {
+  //   console.error("Error minting NFT:", error);
+  //   this.nftTitle?.setText("Error minting NFT");
+  // }
+};
 }
