@@ -12,7 +12,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>BUK Bash</title>
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-       
+        <meta
+          name="description"
+          content="BUK Bash - NFT reward"
+        />
+        <meta name="keywords" content="buk bash" />
+      </Head>
       <Script
         src="https://telegram.org/js/telegram-web-app.js"
         strategy="lazyOnload"
@@ -20,12 +25,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           console.log('Telegram Web App SDK loaded.');
         }}
       />
-        <meta
-          name="description"
-          content="BUK Bash - NFT reward"
-        />
-        <meta name="keywords" content="buk bash" />
-      </Head>
       <Component {...pageProps} />
     </ThirdwebProvider>
   );
