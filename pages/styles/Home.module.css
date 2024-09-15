@@ -241,6 +241,8 @@
   margin: 0;
   padding: 0;
   width: 100%;
+  border-color:#9f2c9d;
+  border: 3px;
   height: 100%;
 }
 
