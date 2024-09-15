@@ -69,16 +69,13 @@ export default class EndingScene extends Phaser.Scene {
 
   mintWithSignature = async () => {
     try {
+      this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
       // Initialize WalletConnect with the required options
-      const walletConnect = new WalletConnect({
-        chains: [BaseSepoliaTestnet], // Specify the chains you want to support
-        appName: "buk-bash", // Name of your app
-        shouldAutoConnect: true, // Optional: Automatically connect if possible
-      });
+      await this.wallet.connect(BaseSepoliaTestnet.chainId);
 
       // Connect to the user's wallet via WalletConnect
-      await walletConnect.connect();
-      const signer = await walletConnect.getSigner();
+  //    await walletConnect.connect();
+      const signer = await this.wallet.getSigner();
       this.userAddress = await signer.getAddress();
 
       // Fetch the NFT collection contract
