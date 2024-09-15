@@ -172,6 +172,5 @@ export default class EndingScene extends Phaser.Scene {
   // } catch (error) {
   //   console.error("Error minting NFT:", error);
   //   this.nftTitle?.setText("Error minting NFT");
-  // }
-};
+  // }x
 }
