@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { EmbeddedWallet } from "@thirdweb-dev/wallets";
 import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import { CoinbaseWallet } from "@thirdweb-dev/wallets";
 
 // Utility function to detect mobile devices
 const isMobile = () => {
@@ -18,7 +18,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 }
 
 export default class StartScene extends Phaser.Scene {
-  wallet: CoinbaseWallet | undefined;
+  //wallet: CoinbaseWallet | undefined;
   userAddress: string | undefined;
   bg: Phaser.GameObjects.Image | undefined;
 
@@ -58,7 +58,7 @@ export default class StartScene extends Phaser.Scene {
     this.connectButton.setInteractive();
 
     this.connectButton.on("pointerup", () => {
-      this.startGame();
+      this.connectWallet();
     });
 
     // Adjust scaling and resizing for mobile
@@ -87,6 +87,18 @@ export default class StartScene extends Phaser.Scene {
   }
 
   connectWallet = async () => {
+const wallet = new EmbeddedWallet({
+  chain: BaseSepoliaTestnet, //  chain to connect to
+  clientId: process.env.NEXT_PUBLIC_CLIENT_ID, // client ID
+});
+ 
+const authResult = await wallet.authenticate({
+  strategy: "email"
+});
+ 
+const walletAddress = await wallet.connect({ authResult });
+
+console.log(walletAddress);
     // if (!window.ethereum) {
     //   this.displayMessage("Please install MetaMask or other wallet");
     //   return;
@@ -97,7 +109,7 @@ export default class StartScene extends Phaser.Scene {
     //   await this.wallet.connect(BaseSepoliaTestnet.chainId);
     //   const signer = await this.wallet.getSigner();
     //   this.userAddress = await signer.getAddress();
-    //   this.startGame();
+      this.startGame();
     // } catch (error) {
     //   console.error("Error connecting wallet:", error);
     //   this.displayMessage("Error connecting wallet");

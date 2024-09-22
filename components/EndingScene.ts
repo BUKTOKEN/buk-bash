@@ -39,7 +39,7 @@ export default class EndingScene extends Phaser.Scene {
     //  this.add.image(400, 280, "bg");
 
     // Create a button to mint NFT
-    const mintButton = this.add.text(400, 300, "Mint NFT", {
+    const mintButton = this.add.text(400, 200, "Mint NFT", {
       fontSize: "32px",
       fontFamily: "Arial",
       color: "#ffffff",
@@ -65,8 +65,6 @@ export default class EndingScene extends Phaser.Scene {
     this.nftTitle.setOrigin(0.5);
   }
 
-  // import { WalletConnect } from "@thirdweb-dev/wallets";
-
   mintWithSignature = async () => {
     try {
       this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
@@ -74,7 +72,7 @@ export default class EndingScene extends Phaser.Scene {
       await this.wallet.connect(BaseSepoliaTestnet.chainId);
 
       // Connect to the user's wallet via WalletConnect
-  //    await walletConnect.connect();
+      // await walletConnect.connect();
       const signer = await this.wallet.getSigner();
       this.userAddress = await signer.getAddress();
 
