@@ -256,7 +256,7 @@ export default class PlatformerScene extends Phaser.Scene {
       loop: true
     });
 
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard?.createCursorKeys();
 
     // Texts
     this.playerHealthText = this.add.text(16, 16, "BUK: 100%", {
@@ -281,7 +281,7 @@ export default class PlatformerScene extends Phaser.Scene {
       const enemySprite = enemy as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
       let isEnemyAttacking = false;
-      const isPlayerPunching = playerSprite.anims.currentAnim.key === 'bukPunch';
+      const isPlayerPunching = playerSprite.anims.currentAnim?.key === 'bukPunch';
       if (enemySprite.anims && enemySprite.anims.currentAnim) {
         isEnemyAttacking = enemySprite.anims.currentAnim.key === 'attack';
       }
