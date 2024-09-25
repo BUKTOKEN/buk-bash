@@ -17,7 +17,6 @@ export default class EndingScene extends Phaser.Scene {
     super({ key: "ending" });
   }
 
-
   init(data: any) {
    // this.wallet = data.playerWallet;
    // this.userAddress = data.userAddress;

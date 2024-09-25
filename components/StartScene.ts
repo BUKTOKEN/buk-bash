@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { EmbeddedWallet } from "@thirdweb-dev/wallets";
-import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
+// import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+// import { EmbeddedWallet } from "@thirdweb-dev/wallets";
+// import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
 
 // Utility function to detect mobile devices
 const isMobile = () => {
