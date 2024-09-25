@@ -1,20 +1,20 @@
-import { ConnectButton } from "thirdweb/react";
-import { createWallet, inAppWallet } from "thirdweb/wallets";
+// import { ConnectButton } from "thirdweb/react";
+// import { createWallet, inAppWallet } from "thirdweb/wallets";
 import type { NextPage } from "next";
 import { Game as GameType } from "phaser";
 import { useEffect, useState } from "react";
 import styles from "./styles/Home.module.css";
-import { Address, createThirdwebClient } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
-import {
-	CHAIN,
-	accountAbstraction,
-	appMetadata,
-	client,
-	contract,
-	wallets,
-} from "../components/constants";
-import dynamic from "next/dynamic";
+// import { Address, createThirdwebClient } from "thirdweb";
+// import { baseSepolia } from "thirdweb/chains";
+// import {
+// 	CHAIN,
+// 	accountAbstraction,
+// 	appMetadata,
+// 	client,
+// 	contract,
+// 	wallets,
+// } from "../components/constants";
+// import dynamic from "next/dynamic";
 
 
 

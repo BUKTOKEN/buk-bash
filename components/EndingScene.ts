@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
+//import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BaseSepoliaTestnet, Chain } from "@thirdweb-dev/chains";
-import { CoinbaseWallet, EmbeddedWallet, WalletConnect } from "@thirdweb-dev/wallets";
-import { providers } from "ethers";
+import { EmbeddedWallet } from "@thirdweb-dev/wallets";
+//import { providers } from "ethers";
 
 export default class EndingScene extends Phaser.Scene {
   displayMessage(arg0: string) {
