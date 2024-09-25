@@ -10,24 +10,25 @@
   },
   "dependencies": {
     "@thirdweb-dev/chains": "^0.1.120",
-    "@thirdweb-dev/react": "^3",
-    "@thirdweb-dev/sdk": "^3",
+    "@thirdweb-dev/react": "4.9.4",
+    "@thirdweb-dev/sdk": "4.0.99",
     "@thirdweb-dev/storage": "^1",
-    "@thirdweb-dev/wallets": "^0",
+    "@thirdweb-dev/wallets": "2.5.39",
     "dotenv": "^16.4.5",
     "ethers": "^5.6.8",
     "next": "^12.1.6",
     "phaser": "^3.55.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "telegraf": "^4.16.3"
+    "telegraf": "^4.16.3",
+    "thirdweb": "^5.58.4"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
     "@types/react": "^17.0.40",
     "eslint": "^8.11.0",
     "eslint-config-next": "^12.1.0",
-    "typescript": "^4.6.2"
+    "typescript": "^5.0.4"
   },
   "browser": {
     "fs": false,

@@ -1,14 +1,14 @@
 import Phaser from "phaser";
 import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { BaseSepoliaTestnet, Chain } from "@thirdweb-dev/chains";
-import { CoinbaseWallet, WalletConnect } from "@thirdweb-dev/wallets";
+import { CoinbaseWallet, EmbeddedWallet, WalletConnect } from "@thirdweb-dev/wallets";
 import { providers } from "ethers";
 
 export default class EndingScene extends Phaser.Scene {
   displayMessage(arg0: string) {
     throw new Error("Method not implemented.");
   }
-  wallet: CoinbaseWallet | undefined;
+  wallet: string | undefined;
   userAddress: string | undefined;
   nftTitle: Phaser.GameObjects.Text | undefined;
   bg: Phaser.GameObjects.Image | undefined;
@@ -18,10 +18,10 @@ export default class EndingScene extends Phaser.Scene {
   }
 
 
-  // init(data: any) {
-  //   this.wallet = data.playerWallet;
-  //   this.userAddress = data.userAddress;
-  // }
+  init(data: any) {
+   // this.wallet = data.playerWallet;
+   // this.userAddress = data.userAddress;
+  }
 
   preload() {
     this.load.image("bg", "assets/bukbeachbg.jpg");
@@ -67,42 +67,53 @@ export default class EndingScene extends Phaser.Scene {
 
   mintWithSignature = async () => {
     try {
-      this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
-      // Initialize WalletConnect with the required options
-      await this.wallet.connect(BaseSepoliaTestnet.chainId);
+      // this.wallet = new CoinbaseWallet({ appName: "buk-bash" });
+      // // Initialize WalletConnect with the required options
+      // await this.wallet.connect(BaseSepoliaTestnet.chainId);
 
       // Connect to the user's wallet via WalletConnect
       // await walletConnect.connect();
-      const signer = await this.wallet.getSigner();
-      this.userAddress = await signer.getAddress();
+      const wallet = new EmbeddedWallet({
+        chain: BaseSepoliaTestnet, //  chain to connect to
+        clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
+      });
+       
+      const authResult = await wallet.authenticate({
+        strategy: "google"
+      });
+       
+      const walletConnect = await wallet.connect({ authResult });
+    //  walletConnect = await walletConn
+     //  const signer = await walletConnect.getSigner();
+     //  this.userAddress = await signer.getAddress();
 
       // Fetch the NFT collection contract
-      const sdk = ThirdwebSDK.fromSigner(signer, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
-      const nftCollection = await sdk.getContract(
-        process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
-        "nft-collection"
-      );
+    //   const sdk = ThirdwebSDK.fromSigner(walletConnect, BaseSepoliaTestnet, { clientId: process.env.NEXT_PUBLIC_CLIENT_ID });
+    //   const nftCollection = await sdk.getContract(
+    //     process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS || "",
+    //     "nft-collection"
+    //   );
 
-      // Mint NFT with signature
-      const nft = await nftCollection.mint({
-        name: "Level Completion NFT",
-        description: "Completed level 1",
-        image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe",
-        properties: {
-          level: 1,
-        },
-      });
+    //   // Mint NFT with signature
+    //   const nft = await nftCollection.mint({
+    //     name: "Level Completion NFT",
+    //     description: "Completed level 1",
+    //     image: "ipfs://QmP31GBJov6Us7iHyGv4JWcPiiLmJbJWsUXAd7pfMMbYTe",
+    //     properties: {
+    //       level: 1,
+    //     },
+    //   });
 
-      if (nft) {
-        this.nftTitle?.setText("NFT minted successfully!");
-      } else {
-        this.nftTitle?.setText("Failed to mint NFT");
-      }
+    //   if (nft) {
+    //     this.nftTitle?.setText("NFT minted successfully!");
+    //   } else {
+    //     this.nftTitle?.setText("Failed to mint NFT");
+    //   }
     } catch (error) {
       console.error("Error minting NFT:", error);
       this.displayMessage("Error minting NFT");
     }
-  };
+  }
 
   // mintWithSignature = async () => {
   // if (!this.wallet || !this.userAddress) {
@@ -170,5 +181,5 @@ export default class EndingScene extends Phaser.Scene {
   // } catch (error) {
   //   console.error("Error minting NFT:", error);
   //   this.nftTitle?.setText("Error minting NFT");
-  // }x
+  // }
 }

@@ -18,7 +18,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 }
 
 export default class StartScene extends Phaser.Scene {
-  //wallet: CoinbaseWallet | undefined;
+  walletAddress: string | undefined;
   userAddress: string | undefined;
   bg: Phaser.GameObjects.Image | undefined;
 
@@ -87,18 +87,18 @@ export default class StartScene extends Phaser.Scene {
   }
 
   connectWallet = async () => {
-const wallet = new EmbeddedWallet({
-  chain: BaseSepoliaTestnet, //  chain to connect to
-  clientId: process.env.NEXT_PUBLIC_CLIENT_ID, // client ID
-});
+//     const wallet = new EmbeddedWallet({
+//   chain: BaseSepoliaTestnet, //  chain to connect to
+//   clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
+// });
  
-const authResult = await wallet.authenticate({
-  strategy: "email"
-});
+// const authResult = await wallet.authenticate({
+//   strategy: "google"
+// });
  
-const walletAddress = await wallet.connect({ authResult });
+// this.walletAddress = await wallet.connect({ authResult });
 
-console.log(walletAddress);
+console.log(this.walletAddress);
     // if (!window.ethereum) {
     //   this.displayMessage("Please install MetaMask or other wallet");
     //   return;
@@ -123,7 +123,7 @@ console.log(walletAddress);
     // }
 
     this.scene.start("platformer", {
-      // playerWallet: this.wallet,
+      // playerWallet: this.walletAddress,
       // userAddress: this.userAddress,
     });
   };
