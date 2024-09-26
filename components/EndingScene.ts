@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 //import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
-// import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-// import { EmbeddedWallet } from "@thirdweb-dev/wallets";
+import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
+import { EmbeddedWallet } from "@thirdweb-dev/wallets";
 //import { providers } from "ethers";
 
 export default class EndingScene extends Phaser.Scene {
@@ -74,18 +74,16 @@ export default class EndingScene extends Phaser.Scene {
       // await walletConnect.connect();
 
 
-
-      // const wallet = new EmbeddedWallet({
-      //   chain: BaseSepoliaTestnet, //  chain to connect to
-      //   clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
-      // });
+      const wallet = new EmbeddedWallet({
+        chain: BaseSepoliaTestnet, //  chain to connect to
+        clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
+      });
        
-      // const authResult = await wallet.authenticate({
-      //   strategy: "google"
-      // });
+      const authResult = await wallet.authenticate({
+        strategy: "google"
+      });
        
-      // const walletConnect = await wallet.connect({ authResult });
-
+      const walletConnect = await wallet.connect({ authResult });
 
 
     //  walletConnect = await walletConn
