@@ -79,12 +79,14 @@ export default class EndingScene extends Phaser.Scene {
         clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
       });
        
+      console.log(wallet);
       const authResult = await wallet.authenticate({
         strategy: "google"
       });
        
+      console.log(authResult);
       const walletConnect = await wallet.connect({ authResult });
-
+console.log(walletConnect);
 
     //  walletConnect = await walletConn
      //  const signer = await walletConnect.getSigner();
