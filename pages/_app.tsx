@@ -1,13 +1,13 @@
-import { ThirdwebProvider, embeddedWallet } from "@thirdweb-dev/react";
+import { ThirdwebProvider } from "thirdweb/react";
 import type { AppProps } from "next/app";
 import Script from 'next/script';
 import Head from "next/head";
-import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
+//import { baseSepolia } from "thirdweb/chains";
 import "./styles/globals.css";
-
+//activeChain={[baseSepolia]} clientId={process.env.NEXT_PUBLIC_CLIENT_ID} supportedWallets={[embeddedWallet()]}
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider  supportedChains={[BaseSepoliaTestnet]} clientId={process.env.NEXT_PUBLIC_CLIENT_ID} supportedWallets={[embeddedWallet()]}>
+    <ThirdwebProvider>
       <Head>
         <title>BUK Bash</title>
         {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" /> */}

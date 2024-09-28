@@ -1,32 +1,26 @@
-// import { ConnectButton } from "thirdweb/react";
-// import { createWallet, inAppWallet } from "thirdweb/wallets";
 import type { NextPage } from "next";
 import { Game as GameType } from "phaser";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./styles/Home.module.css";
-// import { Address, createThirdwebClient } from "thirdweb";
-// import { baseSepolia } from "thirdweb/chains";
-// import {
-// 	CHAIN,
-// 	accountAbstraction,
-// 	appMetadata,
-// 	client,
-// 	contract,
-// 	wallets,
-// } from "../components/constants";
-// import dynamic from "next/dynamic";
-
-
+import WalletConnection from "./WalletConnection";
 
 const Home: NextPage = () => {
   const [game, setGame] = useState<GameType>();
   const [portraitMode, setPortraitMode] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const gameRef = useRef<GameType | null>(null);
 
-  // const isMobile = () => {
-  //   const userAgent = navigator.userAgent || navigator.vendor;
-  //   const isOpera = navigator.userAgent.indexOf('OPR/') >= 0; // Check for Opera
-  //   return /android|iphone|ipad|ipod/i.test(userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 600) || isOpera;
-  // };
+  const handleWalletConnect = (address: string) => {
+    setWalletAddress(address); // Update wallet state
+
+    // Pass the address to Phaser EndingScene if the game is initialized
+    if (gameRef.current) {
+      const endingScene = gameRef.current.scene.getScene("ending") as any;
+      if (endingScene && typeof endingScene.setWalletAddress === "function") {
+        endingScene.setWalletAddress(address); // Pass address to the scene
+      }
+    }
+  };
 
   const isMobile = () => {
     if (typeof window === "undefined") {
@@ -141,6 +135,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>			
+      <WalletConnection onWalletConnect={handleWalletConnect} />
       <div id="app" key="app" className={styles.appMobile}>
         {/* the game will be rendered here */}
       </div>

@@ -1,14 +1,28 @@
 import Phaser from "phaser";
 //import { ChainId, ThirdwebSDK } from "@thirdweb-dev/sdk";
-import { BaseSepoliaTestnet } from "@thirdweb-dev/chains";
-import { EmbeddedWallet } from "@thirdweb-dev/wallets";
+// import { BaseSepolia } from "thirdweb/chains";
+// import { embeddedWallet } from "thirdweb/wallets";
 //import { providers } from "ethers";
+import ReactDOM from 'react-dom';
+import React from 'react';
+import { ConnectButton } from "thirdweb/react";
+import Image from "next/image";
+import {
+	CHAIN,
+	accountAbstraction,
+	appMetadata,
+	client,
+	contract,
+	wallets,
+  
+} from "../components/thirdwebconstants";
+import { Address } from "thirdweb";
 
 export default class EndingScene extends Phaser.Scene {
   displayMessage(arg0: string) {
     throw new Error("Method not implemented.");
   }
-  wallet: string | undefined;
+  walletAddress: string | undefined;
   userAddress: string | undefined;
   nftTitle: Phaser.GameObjects.Text | undefined;
   bg: Phaser.GameObjects.Image | undefined;
@@ -63,6 +77,10 @@ export default class EndingScene extends Phaser.Scene {
     });
     this.nftTitle.setOrigin(0.5);
   }
+     // Custom method to set wallet address
+  setWalletAddress(address: string) {
+    this.userAddress = address;
+  }
 
   mintWithSignature = async () => {
     try {
@@ -74,19 +92,17 @@ export default class EndingScene extends Phaser.Scene {
       // await walletConnect.connect();
 
 
-      const wallet = new EmbeddedWallet({
-        chain: BaseSepoliaTestnet, //  chain to connect to
-        clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
-      });
+      // const wallet = new embeddedWallet({
+      //   chain: BaseSepolia, //  chain to connect to
+      //   clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "", // client ID
+      // });
        
-      console.log(wallet);
-      const authResult = await wallet.authenticate({
-        strategy: "google"
-      });
+      // const authResult = await wallet.authenticate({
+      //   strategy: "google"
+      // });
        
-      console.log(authResult);
-      const walletConnect = await wallet.connect({ authResult });
-console.log(walletConnect);
+      // const walletConnect = await wallet.connect({ authResult });
+
 
     //  walletConnect = await walletConn
      //  const signer = await walletConnect.getSigner();
