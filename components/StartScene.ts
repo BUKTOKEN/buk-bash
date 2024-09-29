@@ -18,7 +18,8 @@ if (window.Telegram && window.Telegram.WebApp) {
 }
 
 export default class StartScene extends Phaser.Scene {
-  walletAddress: string | undefined;
+  walletAddress: string | null;
+  walletText: Phaser.GameObjects.Text | undefined; // Keep track of the text object for updating
   userAddress: string | undefined;
   bg: Phaser.GameObjects.Image | undefined;
 
@@ -27,6 +28,7 @@ export default class StartScene extends Phaser.Scene {
 
   constructor() {
     super({ key: "start" });
+    this.walletAddress = null; // Wallet address will be passed here
   }
 
   preload() {
@@ -69,6 +71,19 @@ export default class StartScene extends Phaser.Scene {
       this.scale.scaleMode = Phaser.Scale.FIT;
       this.scale.refresh();
     }
+
+        // Create text to display wallet address
+        this.walletText = this.add.text(400, 300, "Wallet: " + (this.walletAddress || "Not connected"), {
+          fontSize: "32px",
+          fontFamily: "Arial",
+          color: "#ffffff",
+          backgroundColor: "#000000",
+          padding: {
+            x: 20,
+            y: 10,
+          },
+        });
+        this.walletText.setOrigin(0.5);
   }
 
   resize(gameSize: any) {
@@ -85,6 +100,17 @@ export default class StartScene extends Phaser.Scene {
       this.connectButton.setPosition(width / 2, height / 2);
     }
   }
+
+    // This method will be called from index.tsx to set the wallet address
+    setWalletAddress(address: string) {
+      this.walletAddress = address;
+      console.log(`Wallet address received in EndingScene: ${this.walletAddress}`); // Add this log
+    
+      // Update the displayed wallet address
+      if (this.walletText) {
+        this.walletText.setText("Wallet: " + this.walletAddress);
+      }
+    }
 
   connectWallet = async () => {
 //     const wallet = new EmbeddedWallet({
@@ -123,7 +149,7 @@ console.log(this.walletAddress);
     // }
 
     this.scene.start("platformer", {
-      // playerWallet: this.walletAddress,
+       playerWallet: this.walletAddress,
       // userAddress: this.userAddress,
     });
   };
