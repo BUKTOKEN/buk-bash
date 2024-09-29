@@ -5,7 +5,7 @@ import styles from "./styles/Home.module.css";
 import WalletConnection from "./WalletConnection";
 
 const Home: NextPage = () => {
-  const [game, setGame] = useState<GameType | null>(null);
+  const [game, setGame] = useState<GameType>();
   const [portraitMode, setPortraitMode] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const gameRef = useRef<GameType | null>(null);
@@ -13,13 +13,14 @@ const Home: NextPage = () => {
   // Handle wallet connection and pass the address to the scene
   const handleWalletConnect = (address: string) => {
     setWalletAddress(address); // Update wallet state
-    console.log("Wallet connected in index.tsx:", address);
+    console.log("Wallet connected in index.tsx:", address); // Add this log for debugging
 
     // Pass the address to Phaser EndingScene if the game is initialized
     if (gameRef.current) {
       const startScene = gameRef.current.scene.getScene("start") as any;
       if (startScene && typeof startScene.setWalletAddress === "function") {
         console.log("Passing address to EndingScene:", address); // Log to confirm passing
+
         startScene.setWalletAddress(address); // Pass address to the scene
       } else {
         console.log("EndingScene not ready or setWalletAddress is not a function");
@@ -119,7 +120,6 @@ const Home: NextPage = () => {
 
     initPhaser();
 
-    // If on mobile, remove extra elements
     if (isMobile()) {
       document.querySelector("dev")?.remove();
       document.querySelector(".header")?.remove();
@@ -127,30 +127,28 @@ const Home: NextPage = () => {
       document.querySelector("a")?.remove();
       document.querySelector("span")?.remove();
     }
-  }, [game, walletAddress]);
 
-  // Conditional rendering to show content only if the wallet is connected
-  if (!walletAddress) {
-    return (
-      <div className={styles.container}>
-        <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>
-        
-        {/* Wallet connection component */}
-        <WalletConnection onWalletConnect={handleWalletConnect} />
-
-        {/* Optionally, add a message indicating that the user should connect their wallet */}
-        <p>Please connect your wallet to continue.</p>
-      </div>
-    );
-  }
+    if(!walletAddress){
+      document.querySelector("dev")?.remove();
+      document.querySelector(".header")?.remove();
+      document.querySelector("p")?.remove();
+      document.querySelector("a")?.remove();
+      document.querySelector("span")?.remove();
+      document.getElementById("portrait-warning")?.remove();
+    //  document.getElementById("app")?.remove();
+      console.log("no wallet");
+    }
+  }, [game, walletAddress]); // Ensure useEffect re-runs when walletAddress changes
 
   return (
     <div className={styles.container}>
       <span className="header"><h1 className={styles.h1}>BUK Bash</h1></span>
       
-      {/* Render game content only if wallet is connected */}
+      {/* Wallet connection component */}
+      <WalletConnection onWalletConnect={handleWalletConnect} />
+
       <div id="app" key="app" className={styles.appMobile}>
-        {/* The game will be rendered here */}
+        {/* the game will be rendered here */}
       </div>
 
       <div id="portrait-warning">
